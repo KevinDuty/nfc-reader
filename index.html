@@ -2,20 +2,76 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NFC Offline App</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0a0f24, #001a33);
+      color: white;
+      text-align: center;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px cyan;
+    }
+
+    p {
+      opacity: 0.8;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      background: rgba(0, 255, 255, 0.15);
+      color: cyan;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 10px cyan;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      background: rgba(0, 255, 255, 0.3);
+      transform: scale(1.03);
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 18px;
+      text-shadow: 0 0 8px cyan;
+    }
+  </style>
 </head>
 <body>
 
-<h1>NFC Offline App</h1>
-<p>Fonctionne hors‑ligne grâce au Service Worker.</p>
+<div class="container">
+  <h1>NFC Offline App</h1>
+  <p>Fonctionne hors‑ligne grâce au Service Worker.</p>
 
-<button onclick="lire()">📡 Lire</button>
-<button onclick="ecrire()">✨ Écrire</button>
-<button onclick="mettreMDP()">🔐 Mettre un mot de passe</button>
-<button onclick="supprimerCle()">🗑️ Supprimer la clé</button>
-<button onclick="enleverMDP()">🔓 Enlever le mot de passe</button>
+  <button class="btn" onclick="lire()">📡 Lire</button>
+  <button class="btn" onclick="ecrire()">✨ Écrire</button>
+  <button class="btn" onclick="mettreMDP()">🔐 Mettre un mot de passe</button>
+  <button class="btn" onclick="supprimerCle()">🗑️ Supprimer la clé</button>
+  <button class="btn" onclick="enleverMDP()">🔓 Enlever le mot de passe</button>
 
-<p id="status">En attente…</p>
+  <p id="status">En attente…</p>
+</div>
 
 <script>
 // --- NFC FUNCTIONS ---
