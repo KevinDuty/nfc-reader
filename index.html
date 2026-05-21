@@ -1,151 +1,50 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>NFC Scanner – Neon Glow</title>
-
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-
-    body {
-        margin: 0;
-        padding: 0;
-        font-family: 'Orbitron', sans-serif;
-        background: radial-gradient(circle at top, #0a0f1f, #000);
-        color: #0ff;
-        text-align: center;
-    }
-
-    h1 {
-        margin-top: 40px;
-        font-size: 40px;
-        text-shadow: 0 0 15px #0ff;
-    }
-
-    .container {
-        width: 90%;
-        max-width: 500px;
-        margin: auto;
-        margin-top: 40px;
-        padding: 20px;
-        border-radius: 20px;
-        background: rgba(0, 255, 255, 0.05);
-        box-shadow: 0 0 25px #0ff;
-        backdrop-filter: blur(10px);
-    }
-
-    button {
-        width: 100%;
-        padding: 15px;
-        margin-top: 15px;
-        font-size: 18px;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        color: #000;
-        font-weight: bold;
-        background: linear-gradient(90deg, #0ff, #0af);
-        box-shadow: 0 0 15px #0ff;
-        transition: 0.2s;
-    }
-
-    button:hover {
-        box-shadow: 0 0 25px #0ff, 0 0 40px #0af;
-        transform: scale(1.05);
-    }
-
-    input {
-        width: 100%;
-        padding: 12px;
-        margin-top: 15px;
-        border-radius: 10px;
-        border: 2px solid #0ff;
-        background: rgba(0, 0, 0, 0.4);
-        color: #0ff;
-        font-size: 16px;
-        text-align: center;
-        box-shadow: 0 0 10px #0ff;
-    }
-
-    #log {
-        margin-top: 20px;
-        padding: 15px;
-        min-height: 120px;
-        border-radius: 12px;
-        background: rgba(0, 255, 255, 0.08);
-        box-shadow: inset 0 0 20px #0ff;
-        white-space: pre-wrap;
-        text-align: left;
-        color: #0ff;
-        font-size: 14px;
-    }
-</style>
+  <meta charset="UTF-8">
+  <title>NFC Offline App</title>
 </head>
-
 <body>
 
-<h1>NFC Neon Scanner</h1>
+<h1>NFC Offline App</h1>
+<p>Fonctionne hors‑ligne grâce au Service Worker.</p>
 
-<div class="container">
-    <button id="scan">📡 Scanner une puce NFC</button>
+<button onclick="lire()">📡 Lire</button>
+<button onclick="ecrire()">✨ Écrire</button>
+<button onclick="mettreMDP()">🔐 Mettre un mot de passe</button>
+<button onclick="supprimerCle()">🗑️ Supprimer la clé</button>
+<button onclick="enleverMDP()">🔓 Enlever le mot de passe</button>
 
-    <input id="textToWrite" placeholder="Texte à écrire sur la puce">
-    <button id="write">✨ Écrire sur la puce NFC</button>
-
-    <div id="log">En attente…</div>
-</div>
+<p id="status">En attente…</p>
 
 <script>
-const log = msg => document.getElementById("log").textContent += msg + "\n";
+// --- NFC FUNCTIONS ---
+function lire() {
+  document.getElementById("status").textContent = "Lecture NFC…";
+}
 
-document.getElementById("scan").onclick = async () => {
-    document.getElementById("log").textContent = "";
+function ecrire() {
+  document.getElementById("status").textContent = "Écriture NFC…";
+}
 
-    if (!("NDEFReader" in window)) {
-        log("Web NFC non supporté.");
-        return;
-    }
+function mettreMDP() {
+  document.getElementById("status").textContent = "Définition du mot de passe…";
+}
 
-    try {
-        const ndef = new NDEFReader();
-        await ndef.scan();
-        log("📡 Scan démarré… Approche une puce.");
+function supprimerCle() {
+  document.getElementById("status").textContent = "Suppression de la clé…";
+}
 
-        ndef.addEventListener("reading", event => {
-            log("\n--- PUCE DÉTECTÉE ---");
-            log("ID : " + event.serialNumber);
+function enleverMDP() {
+  document.getElementById("status").textContent = "Retrait du mot de passe…";
+}
 
-            for (const record of event.message.records) {
-                try {
-                    const text = new TextDecoder(record.encoding || "utf-8").decode(record.data);
-                    log("Données : " + text);
-                } catch {
-                    log("Données non textuelles");
-                }
-            }
-        });
-
-    } catch (err) {
-        log("Erreur : " + err);
-    }
-};
-
-document.getElementById("write").onclick = async () => {
-    const text = document.getElementById("textToWrite").value;
-
-    if (!text) {
-        log("⚠️ Mets un texte à écrire.");
-        return;
-    }
-
-    try {
-        const ndef = new NDEFReader();
-        await ndef.write({ records: [{ recordType: "text", data: text }] });
-        log("Texte écrit sur la puce");
-    } catch (err) {
-        log("Erreur écriture : " + err);
-    }
-};
+// --- SERVICE WORKER ---
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js")
+    .then(() => console.log("Service Worker OK"))
+    .catch(err => console.log("Erreur SW", err));
+}
 </script>
 
 </body>
