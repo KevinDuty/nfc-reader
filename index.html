@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NFC Offline App</title>
+  <title>NFC Web App</title>
 
   <style>
     body {
@@ -35,7 +35,7 @@
     .btn {
       width: 100%;
       padding: 15px;
-      margin: 10px 0;
+      margin: 8px 0;
       font-size: 18px;
       border: none;
       border-radius: 12px;
@@ -55,51 +55,125 @@
       margin-top: 20px;
       font-size: 18px;
       text-shadow: 0 0 8px cyan;
+      min-height: 24px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
+
+    .small {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>NFC Offline App</h1>
-  <p>Fonctionne hors‑ligne grâce au Service Worker.</p>
+  <h1>NFC Web App</h1>
+  <p>Chrome Android + NFC activé obligatoire.</p>
+
+  <input id="textToWrite" type="text" placeholder="Texte à écrire sur la puce">
 
   <button class="btn" onclick="lire()">📡 Lire</button>
   <button class="btn" onclick="ecrire()">✨ Écrire</button>
-  <button class="btn" onclick="mettreMDP()">🔐 Mettre un mot de passe</button>
-  <button class="btn" onclick="supprimerCle()">🗑️ Supprimer la clé</button>
-  <button class="btn" onclick="enleverMDP()">🔓 Enlever le mot de passe</button>
+  <button class="btn" onclick="mettreMDP()">🔐 Mettre un mot de passe (simulé)</button>
+  <button class="btn" onclick="supprimerCle()">🗑️ Supprimer la clé (simulé)</button>
+  <button class="btn" onclick="enleverMDP()">🔓 Enlever le mot de passe (simulé)</button>
 
   <p id="status">En attente…</p>
+  <p class="small">Si ça dit “non supporté”, vérifie : Android + Chrome + NFC activé.</p>
 </div>
 
 <script>
-// --- NFC FUNCTIONS ---
-function lire() {
-  document.getElementById("status").textContent = "Lecture NFC…";
+function setStatus(msg) {
+  document.getElementById("status").textContent = msg;
 }
 
-function ecrire() {
-  document.getElementById("status").textContent = "Écriture NFC…";
+function checkNFC() {
+  if (!("NDEFReader" in window)) {
+    setStatus("❌ Web NFC non supporté. Utilise Chrome sur Android.");
+    return false;
+  }
+  return true;
 }
 
+// 📡 LIRE
+async function lire() {
+  if (!checkNFC()) return;
+
+  try {
+    const reader = new NDEFReader();
+    await reader.scan();
+    setStatus("Approche une étiquette NFC…");
+
+    reader.onreading = event => {
+      let result = "";
+      for (const record of event.message.records) {
+        if (record.recordType === "text") {
+          const text = new TextDecoder().decode(record.data);
+          result += `Texte : ${text} `;
+        } else if (record.recordType === "url") {
+          const url = new TextDecoder().decode(record.data);
+          result += `URL : ${url} `;
+        } else {
+          result += `[Type ${record.recordType}] `;
+        }
+      }
+      setStatus(result || "📡 Lu, mais aucun texte lisible trouvé.");
+    };
+
+    reader.onreadingerror = () => {
+      setStatus("Erreur de lecture. Réessaie.");
+    };
+  } catch (err) {
+    setStatus("Erreur : " + err);
+  }
+}
+
+// ✨ ÉCRIRE
+async function ecrire() {
+  if (!checkNFC()) return;
+
+  const text = document.getElementById("textToWrite").value || "Hello NFC";
+
+  try {
+    const writer = new NDEFReader();
+    await writer.write({
+      records: [
+        {
+          recordType: "text",
+          data: text
+        }
+      ]
+    });
+    setStatus("✅ Écrit : " + text + " — approche une étiquette pour valider.");
+  } catch (err) {
+    setStatus("Erreur d'écriture : " + err);
+  }
+}
+
+// 🔐 Mettre un mot de passe (SIMULÉ)
 function mettreMDP() {
-  document.getElementById("status").textContent = "Définition du mot de passe…";
+  setStatus("🔐 Mot de passe activé (simulation interface, pas sur la puce).");
 }
 
+// 🗑️ Supprimer la clé (SIMULÉ)
 function supprimerCle() {
-  document.getElementById("status").textContent = "Suppression de la clé…";
+  setStatus("🗑️ Clé supprimée (simulation interface).");
 }
 
+// 🔓 Enlever le mot de passe (SIMULÉ)
 function enleverMDP() {
-  document.getElementById("status").textContent = "Retrait du mot de passe…";
-}
-
-// --- SERVICE WORKER ---
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js")
-    .then(() => console.log("Service Worker OK"))
-    .catch(err => console.log("Erreur SW", err));
+  setStatus("🔓 Mot de passe désactivé (simulation interface).");
 }
 </script>
 
