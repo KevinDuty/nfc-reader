@@ -6,10 +6,10 @@
 <title>Panneau Unban</title>
 
 <script>
-// ⚙️ CONFIG
-const UNBAN_CODE = "TSI-UNBAN-999"; // 🔐 Change ce code si tu veux
+// 🔐 CODE SECRET
+const UNBAN_CODE = "UNBAN-MASTER";
 
-// Empêcher accès sans code
+// Protection d'accès
 (function() {
   const code = prompt("Code admin requis :");
   if (code !== UNBAN_CODE) {
@@ -25,7 +25,6 @@ const UNBAN_CODE = "TSI-UNBAN-999"; // 🔐 Change ce code si tu veux
   --bg: #050816;
   --card: rgba(15, 23, 42, 0.85);
   --accent: #22d3ee;
-  --danger: #f97373;
   --text-main: #e5e7eb;
   --text-muted: #9ca3af;
 }
@@ -35,7 +34,7 @@ const UNBAN_CODE = "TSI-UNBAN-999"; // 🔐 Change ce code si tu veux
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: system-ui, sans-serif;
   background: radial-gradient(circle at top, #1d2b64 0, #050816 55%, #000 100%);
   color: var(--text-main);
   display: flex;
@@ -43,68 +42,41 @@ body {
   justify-content: center;
 }
 
-.container {
-  width: 100%;
-  max-width: 420px;
-  padding: 24px;
-}
+.container { width: 100%; max-width: 420px; padding: 24px; }
 
 .card {
   background: var(--card);
   border-radius: 24px;
-  padding: 24px 20px 20px;
-  box-shadow:
-    0 0 40px rgba(15, 23, 42, 0.9),
-    0 0 80px rgba(34, 211, 238, 0.25);
-  border: 1px solid rgba(148, 163, 184, 0.25);
+  padding: 24px;
   backdrop-filter: blur(18px);
+  border: 1px solid rgba(148,163,184,0.25);
+  box-shadow: 0 0 40px rgba(15,23,42,0.9), 0 0 80px rgba(34,211,238,0.25);
 }
 
-.title {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.title { font-size: 24px; font-weight: 700; display: flex; gap: 8px; }
+.title span.icon { font-size: 26px; }
 
-.title span.icon {
-  font-size: 26px;
-}
-
-.subtitle {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 20px;
-}
+.subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
 
 input {
   width: 100%;
-  padding: 12px 14px;
+  padding: 12px;
   border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.5);
-  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148,163,184,0.5);
+  background: rgba(15,23,42,0.8);
   color: var(--text-main);
-  font-size: 14px;
-  outline: none;
   margin-bottom: 10px;
 }
 
 .btn {
   width: 100%;
-  padding: 12px 14px;
+  padding: 12px;
   border-radius: 999px;
   border: none;
   margin-top: 10px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: 0.18s;
 }
 
 .btn-primary {
@@ -113,9 +85,9 @@ input {
 }
 
 .btn-ghost {
-  background: rgba(15, 23, 42, 0.9);
+  background: rgba(15,23,42,0.9);
   color: var(--text-main);
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  border: 1px solid rgba(148,163,184,0.5);
 }
 </style>
 </head>
@@ -124,11 +96,7 @@ input {
 <div class="container">
   <div class="card">
 
-    <div class="title">
-      <span class="icon">🔓</span>
-      <span>Panneau Unban</span>
-    </div>
-
+    <div class="title"><span class="icon">🔓</span><span>Panneau Unban</span></div>
     <div class="subtitle">Débannir un utilisateur ou tout le monde.</div>
 
     <label>DeviceID à débannir</label>
@@ -147,7 +115,6 @@ function unbanOne() {
   const id = document.getElementById("deviceInput").value.trim();
   if (!id) return alert("Entre un DeviceID.");
 
-  // Comme tout est local, on ne peut débannir que SOI-MÊME
   const myID = localStorage.getItem("device_id");
 
   if (id === myID) {
