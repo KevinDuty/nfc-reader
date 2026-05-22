@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accès bloqué</title>
+
+<script>
+// ⚙️ CONFIG GLOBALE
+const ADMIN_KEY = "nfcreader_SUPERADMIN";
+const BAN_INITIAL_MS = 7 * 24 * 60 * 60 * 1000;
+const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;
+
+// Si on arrive ici depuis une autre page que ban.html → + pénalité
+(function() {
+  const ref = document.referrer || "";
+  if (!ref.includes("ban.html")) {
+    const currentBan = Number(localStorage.getItem("ban_until")) || Date.now();
+    const newBan = currentBan + BAN_PENALTY_MS;
+    localStorage.setItem("ban_until", newBan);
+  }
+})();
+</script>
+
+<style>
+/* 🔥 STYLE IDENTIQUE À index.html */
+:root {
+  --bg: #050816;
+  --card: rgba(15, 23, 42, 0.85);
+  --accent: #22d3ee;
+  --danger: #f97373;
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #7f1d1d 0, #050816 55%, #000 100%);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 24px;
+}
+
+.card {
+  background: rgba(24, 0, 0, 0.85);
+  border-radius: 24px;
+  padding: 24px 20px 20px;
+  box-shadow:
+    0 0 40px rgba(127, 29, 29, 0.9),
+    0 0 80px rgba(248, 113, 113, 0.35);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  backdrop-filter: blur(18px);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title span.icon {
+  font-size: 26px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+#banInfo {
+  font-size: 15px;
+  margin-bottom: 14px;
+  color: #fecaca;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 999px;
+  border: none;
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: 0.18s;
+}
+
+.btn-ghost {
+  background: rgba(24, 0, 0, 0.9);
+  color: #fecaca;
+  border: 1px solid rgba(248, 113, 113, 0.5);
+}
+
+.btn-ghost:hover {
+  background: rgba(24, 0, 0, 1);
+  border-color: #fca5a5;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card">
+
+    <div class="title">
+      <span class="icon">🚫</span>
+      <span>Accès bloqué</span>
+    </div>
+
+    <div class="subtitle">Cet appareil est actuellement banni.</div>
+
+    <div id="banInfo">Calcul du temps restant…</div>
+
+    <button class="btn btn-ghost" onclick="window.location.href='ban.html'">
+      Actualiser
+    </button>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  const ban = localStorage.getItem("ban_until");
+  const el = document.getElementById("banInfo");
+
+  if (!ban) {
+    el.textContent = "Aucun ban enregistré.";
+    return;
+  }
+
+  const reste = Number(ban) - Date.now();
+  if (reste <= 0) {
+    el.textContent = "Le ban est terminé. Recharge la page.";
+    return;
+  }
+
+  const jours = Math.floor(reste / (1000*60*60*24));
+  const heures = Math.floor((reste / (1000*60*60)) % 24);
+  const minutes = Math.floor((reste / (1000*60)) % 60);
+
+  el.textContent = `Temps restant : ${jours}j ${heures}h ${minutes}m`;
+})();
+</script>
+
+</body>
+</html>
