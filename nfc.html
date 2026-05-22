@@ -41,9 +41,10 @@ const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;
 </script>
 
 <style>
+/* 🔥 STYLE IDENTIQUE À index.html */
 :root {
   --bg: #050816;
-  --card: rgba(15, 23, 42, 0.9);
+  --card: rgba(15, 23, 42, 0.85);
   --accent: #22d3ee;
   --accent-soft: rgba(34, 211, 238, 0.2);
   --danger: #f97373;
@@ -66,7 +67,7 @@ body {
 
 .container {
   width: 100%;
-  max-width: 460px;
+  max-width: 420px;
   padding: 24px;
 }
 
@@ -82,7 +83,7 @@ body {
 }
 
 .title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   margin-bottom: 4px;
   display: flex;
@@ -91,25 +92,25 @@ body {
 }
 
 .title span.icon {
-  font-size: 24px;
+  font-size: 26px;
 }
 
 .subtitle {
   font-size: 13px;
   color: var(--text-muted);
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid rgba(148, 163, 184, 0.5);
   background: rgba(15, 23, 42, 0.8);
   color: var(--text-main);
   font-size: 14px;
   outline: none;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 input:focus {
@@ -119,13 +120,17 @@ input:focus {
 
 .btn {
   width: 100%;
-  padding: 11px 12px;
+  padding: 12px 14px;
   border-radius: 999px;
   border: none;
-  font-size: 14px;
+  margin-top: 10px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   transition: 0.18s;
 }
 
@@ -134,21 +139,10 @@ input:focus {
   color: #020617;
 }
 
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow:
-    0 10px 25px rgba(56, 189, 248, 0.35),
-    0 0 20px rgba(34, 211, 238, 0.4);
-}
-
 .btn-ghost {
   background: rgba(15, 23, 42, 0.9);
   color: var(--text-main);
   border: 1px solid rgba(148, 163, 184, 0.5);
-}
-
-.btn-ghost:hover {
-  border-color: var(--accent);
 }
 
 #status {
@@ -158,36 +152,24 @@ input:focus {
   color: var(--accent);
 }
 
-.small {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 8px;
-}
-
-.section {
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px dashed rgba(148, 163, 184, 0.4);
-}
-
 #adminPanel {
-  margin-top: 14px;
-  padding: 12px;
-  border-radius: 16px;
-  background: radial-gradient(circle at top left, rgba(234,179,8,0.18), rgba(15,23,42,0.95));
-  border: 1px solid rgba(234, 179, 8, 0.5);
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(34, 211, 238, 0.08);
+  border: 1px solid rgba(34, 211, 238, 0.25);
   display: none;
 }
 
 #adminPanel h2 {
-  font-size: 14px;
-  margin-bottom: 6px;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
 
 #adminInfo {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 </style>
 </head>
@@ -195,64 +177,60 @@ input:focus {
 
 <div class="container">
   <div class="card">
+
     <div class="title">
       <span class="icon">📡</span>
       <span>NFC Reader</span>
     </div>
-    <div class="subtitle">
-      Chrome Android + NFC activé obligatoire.
-    </div>
 
-    <input id="textToWrite" type="text" placeholder="Texte à écrire sur la puce">
-    <input id="urlToWrite" type="text" placeholder="URL à écrire (optionnel)">
+    <div class="subtitle">Chrome Android + NFC activé obligatoire.</div>
 
-    <button class="btn btn-primary" onclick="lire()">📡 Lire la puce</button>
-    <button class="btn btn-ghost" onclick="ecrireTexte()">✨ Écrire du texte</button>
-    <button class="btn btn-ghost" onclick="ecrireURL()">🔗 Écrire une URL</button>
-    <button class="btn btn-ghost" onclick="effacer()">🧹 Effacer la puce</button>
+    <input id="textToWrite" placeholder="Texte à écrire">
+    <input id="urlToWrite" placeholder="URL à écrire (optionnel)">
+
+    <button class="btn btn-primary" onclick="lire()">📡 Lire</button>
+    <button class="btn btn-ghost" onclick="ecrireTexte()">✨ Écrire texte</button>
+    <button class="btn btn-ghost" onclick="ecrireURL()">🔗 Écrire URL</button>
+    <button class="btn btn-ghost" onclick="effacer()">🧹 Effacer</button>
 
     <div id="status">En attente…</div>
 
-    <button class="btn btn-ghost" onclick="window.location.href='index.html'">
-      ⬅ Retour
-    </button>
+    <button class="btn btn-ghost" onclick="window.location.href='index.html'">⬅ Retour</button>
 
+    <!-- PANEL ADMIN -->
     <div id="adminPanel">
-      <h2>👑 Panneau admin</h2>
-      <p id="adminInfo"></p>
+      <h2>👑 Admin</h2>
+      <div id="adminInfo"></div>
 
-      <button class="btn btn-ghost" onclick="extendSub(30)">+1 mois d'abonnement</button>
-      <button class="btn btn-ghost" onclick="extendSub(365)">+1 an d'abonnement</button>
-      <button class="btn btn-ghost" onclick="setLife()">Passer l'abonnement à vie</button>
+      <button class="btn btn-ghost" onclick="extendSub(30)">+1 mois</button>
+      <button class="btn btn-ghost" onclick="extendSub(365)">+1 an</button>
+      <button class="btn btn-ghost" onclick="setLife()">Passer à vie</button>
 
-      <button class="btn btn-ghost" onclick="banDevice()">Bannir cet appareil (ban initial)</button>
-      <button class="btn btn-ghost" onclick="clearBan()">Débannir cet appareil</button>
+      <button class="btn btn-ghost" onclick="banDevice()">Bannir</button>
+      <button class="btn btn-ghost" onclick="clearBan()">Débannir</button>
 
-      <button class="btn btn-ghost" onclick="resetAll()">Reset complet (clé + ban + admin)</button>
+      <button class="btn btn-ghost" onclick="resetAll()">Reset complet</button>
     </div>
 
-    <div class="small">
-      Si ça dit “non supporté”, vérifie : Android + Chrome + NFC activé.
-    </div>
   </div>
 </div>
 
 <script>
-function setStatus(msg, isError = false) {
+function setStatus(msg, err=false) {
   const el = document.getElementById("status");
   el.textContent = msg;
-  el.style.color = isError ? "#f97373" : "#22d3ee";
+  el.style.color = err ? "#f97373" : "#22d3ee";
 }
 
 function checkNFC() {
   if (!("NDEFReader" in window)) {
-    setStatus("❌ Web NFC non supporté. Utilise Chrome sur Android.", true);
+    setStatus("❌ Web NFC non supporté.", true);
     return false;
   }
   return true;
 }
 
-// Admin panel
+// ADMIN PANEL
 function refreshAdminInfo() {
   const info = document.getElementById("adminInfo");
   const key = localStorage.getItem("nfc_key");
@@ -260,12 +238,8 @@ function refreshAdminInfo() {
   const ban = localStorage.getItem("ban_until");
   const device = localStorage.getItem("device_id");
 
-  let expText = "Aucune";
-  if (exp === "life") expText = "À vie";
-  else if (exp) {
-    const d = new Date(Number(exp));
-    expText = d.toLocaleString();
-  }
+  let expText = exp === "life" ? "À vie" : new Date(Number(exp)).toLocaleString();
+  if (!exp) expText = "Aucune";
 
   let banText = "Pas banni";
   if (ban && Number(ban) > Date.now()) {
@@ -273,9 +247,9 @@ function refreshAdminInfo() {
   }
 
   info.innerHTML =
-    "DeviceID : " + (device || "inconnu") + "<br>" +
-    "Clé actuelle : " + (key || "aucune") + "<br>" +
-    "Expiration clé : " + expText + "<br>" +
+    "DeviceID : " + device + "<br>" +
+    "Clé : " + (key || "aucune") + "<br>" +
+    "Expiration : " + expText + "<br>" +
     "Ban : " + banText;
 }
 
@@ -288,26 +262,24 @@ function refreshAdminInfo() {
 
 function clearBan() {
   localStorage.removeItem("ban_until");
-  alert("Ban supprimé pour cet appareil.");
+  alert("Débanni.");
   refreshAdminInfo();
 }
 
 function extendSub(days) {
   let exp = localStorage.getItem("nfc_exp");
-  if (!exp || exp === "life") {
-    exp = Date.now();
-  } else {
-    exp = Number(exp);
-  }
+  if (!exp || exp === "life") exp = Date.now();
+  else exp = Number(exp);
+
   const newExp = exp + days * 24 * 60 * 60 * 1000;
   localStorage.setItem("nfc_exp", newExp);
-  alert(`Abonnement prolongé de ${days} jours.`);
+  alert("Abonnement prolongé.");
   refreshAdminInfo();
 }
 
 function setLife() {
   localStorage.setItem("nfc_exp", "life");
-  alert("Abonnement passé à vie.");
+  alert("Abonnement à vie.");
   refreshAdminInfo();
 }
 
@@ -319,49 +291,33 @@ function banDevice() {
 }
 
 function resetAll() {
-  if (!confirm("Tu es sûr ? Ça efface clé, ban, admin pour cet appareil.")) return;
-  localStorage.removeItem("nfc_key");
-  localStorage.removeItem("nfc_exp");
-  localStorage.removeItem("ban_until");
-  localStorage.removeItem("is_admin");
-  alert("Reset complet effectué.");
-  refreshAdminInfo();
+  localStorage.clear();
+  alert("Reset complet.");
+  location.reload();
 }
 
-// 📡 LIRE
+// NFC FUNCTIONS
 async function lire() {
   if (!checkNFC()) return;
 
   try {
     const reader = new NDEFReader();
     await reader.scan();
-    setStatus("Approche une étiquette NFC…");
+    setStatus("Approche une étiquette…");
 
     reader.onreading = event => {
       let result = "";
       for (const record of event.message.records) {
-        if (record.recordType === "text") {
-          const text = new TextDecoder().decode(record.data);
-          result += `Texte : ${text} `;
-        } else if (record.recordType === "url") {
-          const url = new TextDecoder().decode(record.data);
-          result += `URL : ${url} `;
-        } else {
-          result += `[Type ${record.recordType}] `;
-        }
+        const text = new TextDecoder().decode(record.data);
+        result += text + " ";
       }
-      setStatus(result || "📡 Lu, mais aucun texte/URL lisible trouvé.");
-    };
-
-    reader.onreadingerror = () => {
-      setStatus("Erreur de lecture. Réessaie.", true);
+      setStatus(result || "Aucune donnée.");
     };
   } catch (err) {
     setStatus("Erreur : " + err, true);
   }
 }
 
-// ✨ ÉCRIRE TEXTE
 async function ecrireTexte() {
   if (!checkNFC()) return;
 
@@ -369,63 +325,37 @@ async function ecrireTexte() {
 
   try {
     const writer = new NDEFReader();
-    await writer.write({
-      records: [
-        {
-          recordType: "text",
-          data: text
-        }
-      ]
-    });
-    setStatus("✅ Texte écrit : " + text + " — approche une étiquette.");
+    await writer.write({ records: [{ recordType: "text", data: text }] });
+    setStatus("Texte écrit.");
   } catch (err) {
-    setStatus("Erreur d'écriture : " + err, true);
+    setStatus("Erreur : " + err, true);
   }
 }
 
-// 🔗 ÉCRIRE URL
 async function ecrireURL() {
   if (!checkNFC()) return;
 
   const url = document.getElementById("urlToWrite").value;
-  if (!url) {
-    setStatus("Entre une URL avant d'écrire.", true);
-    return;
-  }
+  if (!url) return setStatus("Entre une URL.", true);
 
   try {
     const writer = new NDEFReader();
-    await writer.write({
-      records: [
-        {
-          recordType: "url",
-          data: url
-        }
-      ]
-    });
-    setStatus("✅ URL écrite : " + url + " — approche une étiquette.");
+    await writer.write({ records: [{ recordType: "url", data: url }] });
+    setStatus("URL écrite.");
   } catch (err) {
-    setStatus("Erreur d'écriture : " + err, true);
+    setStatus("Erreur : " + err, true);
   }
 }
 
-// 🧹 EFFACER
 async function effacer() {
   if (!checkNFC()) return;
 
   try {
     const writer = new NDEFReader();
-    await writer.write({
-      records: [
-        {
-          recordType: "text",
-          data: ""
-        }
-      ]
-    });
-    setStatus("🧹 Étiquette nettoyée (texte vide écrit).");
+    await writer.write({ records: [{ recordType: "text", data: "" }] });
+    setStatus("Étiquette effacée.");
   } catch (err) {
-    setStatus("Erreur lors de l'effacement : " + err, true);
+    setStatus("Erreur : " + err, true);
   }
 }
 </script>
