@@ -6,6 +6,11 @@
 <title>NFC Reader</title>
 
 <script>
+// ⚙️ CONFIG GLOBALE
+const ADMIN_KEY = "nfcreader_SUPERADMIN";
+const BAN_INITIAL_MS = 7 * 24 * 60 * 60 * 1000;
+const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;
+
 // --- BAN + ACCÈS PROTÉGÉ ---
 (function() {
   const ban = localStorage.getItem("ban_until");
@@ -18,17 +23,15 @@
   const exp = localStorage.getItem("nfc_exp");
   const isAdmin = localStorage.getItem("is_admin") === "true";
 
-  // Si pas admin, on vérifie la clé
   if (!isAdmin) {
     if (!key) {
-      // Ban 1 mois
-      const banTime = Date.now() + 30*24*60*60*1000;
+      const banTime = Date.now() + BAN_INITIAL_MS;
       localStorage.setItem("ban_until", banTime);
       window.location.href = "ban.html";
       return;
     }
     if (exp !== "life" && Date.now() > Number(exp)) {
-      const banTime = Date.now() + 30*24*60*60*1000;
+      const banTime = Date.now() + BAN_INITIAL_MS;
       localStorage.setItem("ban_until", banTime);
       window.location.href = "ban.html";
       return;
@@ -38,151 +41,291 @@
 </script>
 
 <style>
+:root {
+  --bg: #050816;
+  --card: rgba(15, 23, 42, 0.9);
+  --accent: #22d3ee;
+  --accent-soft: rgba(34, 211, 238, 0.2);
+  --danger: #f97373;
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+}
+
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
-  padding: 0;
-  font-family: Arial;
-  background: linear-gradient(135deg, #0a0f24, #001a33);
-  color: white;
-  text-align: center;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #1d2b64 0, #050816 55%, #000 100%);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .container {
-  padding: 20px;
-  max-width: 500px;
-  margin: auto;
-}
-h1 {
-  font-size: 26px;
-  margin-bottom: 10px;
-  text-shadow: 0 0 10px cyan;
-}
-p {
-  opacity: 0.8;
-  margin-bottom: 20px;
-}
-.btn {
   width: 100%;
-  padding: 15px;
-  margin: 8px 0;
-  font-size: 18px;
-  border: none;
-  border-radius: 12px;
-  background: rgba(0, 255, 255, 0.15);
-  color: cyan;
-  box-shadow: 0 0 10px cyan;
+  max-width: 460px;
+  padding: 24px;
 }
-#status {
-  margin-top: 20px;
-  font-size: 18px;
-  text-shadow: 0 0 8px cyan;
-  min-height: 24px;
+
+.card {
+  background: var(--card);
+  border-radius: 24px;
+  padding: 24px 20px 20px;
+  box-shadow:
+    0 0 40px rgba(15, 23, 42, 0.9),
+    0 0 80px rgba(34, 211, 238, 0.25);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  backdrop-filter: blur(18px);
 }
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title span.icon {
+  font-size: 24px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
 input {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  font-size: 16px;
-}
-.small {
-  font-size: 13px;
-  opacity: 0.7;
-  margin-top: 10px;
-}
-#adminPanel {
-  margin-top: 20px;
-  padding: 15px;
+  padding: 10px 12px;
   border-radius: 12px;
-  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(15, 23, 42, 0.8);
+  color: var(--text-main);
+  font-size: 14px;
+  outline: none;
+  margin-bottom: 8px;
+}
+
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4);
+}
+
+.btn {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 999px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: 0.18s;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #22d3ee, #38bdf8);
+  color: #020617;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 25px rgba(56, 189, 248, 0.35),
+    0 0 20px rgba(34, 211, 238, 0.4);
+}
+
+.btn-ghost {
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--text-main);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.btn-ghost:hover {
+  border-color: var(--accent);
+}
+
+#status {
+  margin-top: 10px;
+  font-size: 13px;
+  min-height: 18px;
+  color: var(--accent);
+}
+
+.small {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.section {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(148, 163, 184, 0.4);
+}
+
+#adminPanel {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 16px;
+  background: radial-gradient(circle at top left, rgba(234,179,8,0.18), rgba(15,23,42,0.95));
+  border: 1px solid rgba(234, 179, 8, 0.5);
   display: none;
+}
+
+#adminPanel h2 {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+#adminInfo {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>NFC Reader</h1>
-  <p>Chrome Android + NFC activé obligatoire.</p>
+  <div class="card">
+    <div class="title">
+      <span class="icon">📡</span>
+      <span>NFC Reader</span>
+    </div>
+    <div class="subtitle">
+      Chrome Android + NFC activé obligatoire.
+    </div>
 
-  <input id="textToWrite" type="text" placeholder="Texte à écrire sur la puce">
-  <input id="urlToWrite" type="text" placeholder="URL à écrire (optionnel)">
+    <input id="textToWrite" type="text" placeholder="Texte à écrire sur la puce">
+    <input id="urlToWrite" type="text" placeholder="URL à écrire (optionnel)">
 
-  <button class="btn" onclick="lire()">📡 Lire la puce</button>
-  <button class="btn" onclick="ecrireTexte()">✨ Écrire du texte</button>
-  <button class="btn" onclick="ecrireURL()">🔗 Écrire une URL</button>
-  <button class="btn" onclick="effacer()">🧹 Effacer la puce</button>
+    <button class="btn btn-primary" onclick="lire()">📡 Lire la puce</button>
+    <button class="btn btn-ghost" onclick="ecrireTexte()">✨ Écrire du texte</button>
+    <button class="btn btn-ghost" onclick="ecrireURL()">🔗 Écrire une URL</button>
+    <button class="btn btn-ghost" onclick="effacer()">🧹 Effacer la puce</button>
 
-  <p id="status">En attente…</p>
+    <div id="status">En attente…</div>
 
-  <button class="btn" onclick="window.location.href='index.html'">⬅ Retour</button>
+    <button class="btn btn-ghost" onclick="window.location.href='index.html'">
+      ⬅ Retour
+    </button>
 
-  <div id="adminPanel">
-    <h2>👑 Admin</h2>
-    <p id="adminInfo"></p>
-    <button class="btn" onclick="clearBan()">Débannir cet appareil</button>
-    <button class="btn" onclick="resetKey()">Supprimer la clé locale</button>
+    <div id="adminPanel">
+      <h2>👑 Panneau admin</h2>
+      <p id="adminInfo"></p>
+
+      <button class="btn btn-ghost" onclick="extendSub(30)">+1 mois d'abonnement</button>
+      <button class="btn btn-ghost" onclick="extendSub(365)">+1 an d'abonnement</button>
+      <button class="btn btn-ghost" onclick="setLife()">Passer l'abonnement à vie</button>
+
+      <button class="btn btn-ghost" onclick="banDevice()">Bannir cet appareil (ban initial)</button>
+      <button class="btn btn-ghost" onclick="clearBan()">Débannir cet appareil</button>
+
+      <button class="btn btn-ghost" onclick="resetAll()">Reset complet (clé + ban + admin)</button>
+    </div>
+
+    <div class="small">
+      Si ça dit “non supporté”, vérifie : Android + Chrome + NFC activé.
+    </div>
   </div>
-
-  <p class="small">Si ça dit “non supporté”, vérifie : Android + Chrome + NFC activé.</p>
 </div>
 
 <script>
-function setStatus(msg) {
-  document.getElementById("status").textContent = msg;
+function setStatus(msg, isError = false) {
+  const el = document.getElementById("status");
+  el.textContent = msg;
+  el.style.color = isError ? "#f97373" : "#22d3ee";
 }
 
 function checkNFC() {
   if (!("NDEFReader" in window)) {
-    setStatus("❌ Web NFC non supporté. Utilise Chrome sur Android.");
+    setStatus("❌ Web NFC non supporté. Utilise Chrome sur Android.", true);
     return false;
   }
   return true;
 }
 
-// Affichage admin si admin
+// Admin panel
+function refreshAdminInfo() {
+  const info = document.getElementById("adminInfo");
+  const key = localStorage.getItem("nfc_key");
+  const exp = localStorage.getItem("nfc_exp");
+  const ban = localStorage.getItem("ban_until");
+  const device = localStorage.getItem("device_id");
+
+  let expText = "Aucune";
+  if (exp === "life") expText = "À vie";
+  else if (exp) {
+    const d = new Date(Number(exp));
+    expText = d.toLocaleString();
+  }
+
+  let banText = "Pas banni";
+  if (ban && Number(ban) > Date.now()) {
+    banText = "Banni jusqu'au " + new Date(Number(ban)).toLocaleString();
+  }
+
+  info.innerHTML =
+    "DeviceID : " + (device || "inconnu") + "<br>" +
+    "Clé actuelle : " + (key || "aucune") + "<br>" +
+    "Expiration clé : " + expText + "<br>" +
+    "Ban : " + banText;
+}
+
 (function() {
   if (localStorage.getItem("is_admin") === "true") {
-    const panel = document.getElementById("adminPanel");
-    const info = document.getElementById("adminInfo");
-    const key = localStorage.getItem("nfc_key");
-    const exp = localStorage.getItem("nfc_exp");
-    const ban = localStorage.getItem("ban_until");
-    const device = localStorage.getItem("device_id");
-
-    let expText = "Aucune";
-    if (exp === "life") expText = "À vie";
-    else if (exp) {
-      const d = new Date(Number(exp));
-      expText = d.toLocaleString();
-    }
-
-    let banText = "Pas banni";
-    if (ban && Number(ban) > Date.now()) {
-      banText = "Banni jusqu'au " + new Date(Number(ban)).toLocaleString();
-    }
-
-    info.innerHTML =
-      "DeviceID : " + (device || "inconnu") + "<br>" +
-      "Clé actuelle : " + (key || "aucune") + "<br>" +
-      "Expiration clé : " + expText + "<br>" +
-      "Ban : " + banText;
-
-    panel.style.display = "block";
+    document.getElementById("adminPanel").style.display = "block";
+    refreshAdminInfo();
   }
 })();
 
-// Admin actions
 function clearBan() {
   localStorage.removeItem("ban_until");
   alert("Ban supprimé pour cet appareil.");
+  refreshAdminInfo();
 }
 
-function resetKey() {
+function extendSub(days) {
+  let exp = localStorage.getItem("nfc_exp");
+  if (!exp || exp === "life") {
+    exp = Date.now();
+  } else {
+    exp = Number(exp);
+  }
+  const newExp = exp + days * 24 * 60 * 60 * 1000;
+  localStorage.setItem("nfc_exp", newExp);
+  alert(`Abonnement prolongé de ${days} jours.`);
+  refreshAdminInfo();
+}
+
+function setLife() {
+  localStorage.setItem("nfc_exp", "life");
+  alert("Abonnement passé à vie.");
+  refreshAdminInfo();
+}
+
+function banDevice() {
+  const banTime = Date.now() + BAN_INITIAL_MS;
+  localStorage.setItem("ban_until", banTime);
+  alert("Appareil banni.");
+  refreshAdminInfo();
+}
+
+function resetAll() {
+  if (!confirm("Tu es sûr ? Ça efface clé, ban, admin pour cet appareil.")) return;
   localStorage.removeItem("nfc_key");
   localStorage.removeItem("nfc_exp");
-  alert("Clé locale supprimée.");
+  localStorage.removeItem("ban_until");
+  localStorage.removeItem("is_admin");
+  alert("Reset complet effectué.");
+  refreshAdminInfo();
 }
 
 // 📡 LIRE
@@ -211,10 +354,10 @@ async function lire() {
     };
 
     reader.onreadingerror = () => {
-      setStatus("Erreur de lecture. Réessaie.");
+      setStatus("Erreur de lecture. Réessaie.", true);
     };
   } catch (err) {
-    setStatus("Erreur : " + err);
+    setStatus("Erreur : " + err, true);
   }
 }
 
@@ -236,7 +379,7 @@ async function ecrireTexte() {
     });
     setStatus("✅ Texte écrit : " + text + " — approche une étiquette.");
   } catch (err) {
-    setStatus("Erreur d'écriture : " + err);
+    setStatus("Erreur d'écriture : " + err, true);
   }
 }
 
@@ -246,7 +389,7 @@ async function ecrireURL() {
 
   const url = document.getElementById("urlToWrite").value;
   if (!url) {
-    setStatus("Entre une URL avant d'écrire.");
+    setStatus("Entre une URL avant d'écrire.", true);
     return;
   }
 
@@ -262,7 +405,7 @@ async function ecrireURL() {
     });
     setStatus("✅ URL écrite : " + url + " — approche une étiquette.");
   } catch (err) {
-    setStatus("Erreur d'écriture : " + err);
+    setStatus("Erreur d'écriture : " + err, true);
   }
 }
 
@@ -282,7 +425,7 @@ async function effacer() {
     });
     setStatus("🧹 Étiquette nettoyée (texte vide écrit).");
   } catch (err) {
-    setStatus("Erreur lors de l'effacement : " + err);
+    setStatus("Erreur lors de l'effacement : " + err, true);
   }
 }
 </script>
