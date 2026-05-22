@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NFC Reader</title>
+
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg, #0a0f24, #001a33);
+  color: white;
+  text-align: center;
+}
+.container {
+  padding: 20px;
+  max-width: 500px;
+  margin: auto;
+}
+h1 {
+  font-size: 26px;
+  margin-bottom: 10px;
+  text-shadow: 0 0 10px cyan;
+}
+p {
+  opacity: 0.8;
+  margin-bottom: 20px;
+}
+.btn {
+  width: 100%;
+  padding: 15px;
+  margin: 8px 0;
+  font-size: 18px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(0, 255, 255, 0.15);
+  color: cyan;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 10px cyan;
+  transition: 0.2s;
+}
+.btn:hover {
+  background: rgba(0, 255, 255, 0.3);
+  transform: scale(1.03);
+}
+#status {
+  margin-top: 20px;
+  font-size: 18px;
+  text-shadow: 0 0 8px cyan;
+  min-height: 24px;
+}
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+.small {
+  font-size: 13px;
+  opacity: 0.7;
+  margin-top: 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>NFC Reader</h1>
+  <p>Chrome Android + NFC activé obligatoire.</p>
+
+  <input id="textToWrite" type="text" placeholder="Texte à écrire sur la puce">
+  <input id="urlToWrite" type="text" placeholder="URL à écrire (optionnel)">
+
+  <button class="btn" onclick="lire()">📡 Lire la puce</button>
+  <button class="btn" onclick="ecrireTexte()">✨ Écrire du texte</button>
+  <button class="btn" onclick="ecrireURL()">🔗 Écrire une URL</button>
+  <button class="btn" onclick="effacer()">🧹 Effacer la puce</button>
+
+  <p id="status">En attente…</p>
+
+  <button class="btn" onclick="window.location.href='index.html'">⬅ Retour</button>
+
+  <p class="small">Si ça dit “non supporté”, vérifie : Android + Chrome + NFC activé.</p>
+</div>
+
+<script>
+function setStatus(msg) {
+  document.getElementById("status").textContent = msg;
+}
+
+function checkNFC() {
+  if (!("NDEFReader" in window)) {
+    setStatus("❌ Web NFC non supporté. Utilise Chrome sur Android.");
+    return false;
+  }
+  return true;
+}
+
+// 📡 LIRE
+async function lire() {
+  if (!checkNFC()) return;
+
+  try {
+    const reader = new NDEFReader();
+    await reader.scan();
+    setStatus("Approche une étiquette NFC…");
+
+    reader.onreading = event => {
+      let result = "";
+      for (const record of event.message.records) {
+        if (record.recordType === "text") {
+          const text = new TextDecoder().decode(record.data);
+          result += `Texte : ${text} `;
+        } else if (record.recordType === "url") {
+          const url = new TextDecoder().decode(record.data);
+          result += `URL : ${url} `;
+        } else {
+          result += `[Type ${record.recordType}] `;
+        }
+      }
+      setStatus(result || "📡 Lu, mais aucun texte/URL lisible trouvé.");
+    };
+
+    reader.onreadingerror = () => {
+      setStatus("Erreur de lecture. Réessaie.");
+    };
+  } catch (err) {
+    setStatus("Erreur : " + err);
+  }
+}
+
+// ✨ ÉCRIRE TEXTE
+async function ecrireTexte() {
+  if (!checkNFC()) return;
+
+  const text = document.getElementById("textToWrite").value || "Hello NFC";
+
+  try {
+    const writer = new NDEFReader();
+    await writer.write({
+      records: [
+        {
+          recordType: "text",
+          data: text
+        }
+      ]
+    });
+    setStatus("✅ Texte écrit : " + text + " — approche une étiquette.");
+  } catch (err) {
+    setStatus("Erreur d'écriture : " + err);
+  }
+}
+
+// 🔗 ÉCRIRE URL
+async function ecrireURL() {
+  if (!checkNFC()) return;
+
+  const url = document.getElementById("urlToWrite").value;
+  if (!url) {
+    setStatus("Entre une URL avant d'écrire.");
+    return;
+  }
+
+  try {
+    const writer = new NDEFReader();
+    await writer.write({
+      records: [
+        {
+          recordType: "url",
+          data: url
+        }
+      ]
+    });
+    setStatus("✅ URL écrite : " + url + " — approche une étiquette.");
+  } catch (err) {
+    setStatus("Erreur d'écriture : " + err);
+  }
+}
+
+// 🧹 EFFACER (écrire message vide)
+async function effacer() {
+  if (!checkNFC()) return;
+
+  try {
+    const writer = new NDEFReader();
+    await writer.write({
+      records: [
+        {
+          recordType: "text",
+          data: ""
+        }
+      ]
+    });
+    setStatus("🧹 Étiquette nettoyée (texte vide écrit).");
+  } catch (err) {
+    setStatus("Erreur lors de l'effacement : " + err);
+  }
+}
+</script>
+
+</body>
+</html>
