@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Achat de clé</title>
+
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg, #0a0f24, #001a33);
+  color: white;
+  text-align: center;
+}
+.container {
+  padding: 20px;
+  max-width: 500px;
+  margin: auto;
+}
+h1 { text-shadow: 0 0 10px cyan; }
+.offer {
+  background: rgba(255,255,255,0.05);
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 15px;
+}
+.btn {
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0;
+  font-size: 18px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(0,255,255,0.15);
+  color: cyan;
+  box-shadow: 0 0 10px cyan;
+}
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🛒 Acheter une clé</h1>
+
+  <div id="choix">
+    <div class="offer">
+      <h3>Simple — 3€</h3>
+      <p>Durée : 1 mois</p>
+      <button class="btn" onclick="choisir('simple')">Choisir</button>
+    </div>
+
+    <div class="offer">
+      <h3>Projet — 5€</h3>
+      <p>Durée : 1 an</p>
+      <button class="btn" onclick="choisir('projet')">Choisir</button>
+    </div>
+
+    <div class="offer">
+      <h3>Start‑Up — 15€</h3>
+      <p>Durée : À vie</p>
+      <button class="btn" onclick="choisir('startup')">Choisir</button>
+    </div>
+  </div>
+
+  <div id="paiement" style="display:none;">
+    <h2>💳 Paiement (simulation)</h2>
+    <p>Mets n’importe quoi, ça marchera.</p>
+
+    <input id="cardNum" placeholder="Numéro de carte">
+    <input id="cardDate" placeholder="MM/AA">
+    <input id="cardCVC" placeholder="CVC">
+
+    <button class="btn" onclick="payer()">Valider</button>
+  </div>
+
+  <p id="status"></p>
+</div>
+
+<script>
+let typeAbonnement = null;
+
+function choisir(type) {
+  typeAbonnement = type;
+  document.getElementById("choix").style.display = "none";
+  document.getElementById("paiement").style.display = "block";
+}
+
+function genererCle() {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let random = "";
+  for (let i = 0; i < 12; i++) random += chars[Math.floor(Math.random()*chars.length)];
+  return "nfcreader_" + random;
+}
+
+function payer() {
+  const key = genererCle();
+  let expiration;
+
+  if (typeAbonnement === "simple") {
+    expiration = Date.now() + 30*24*60*60*1000;
+  } else if (typeAbonnement === "projet") {
+    expiration = Date.now() + 365*24*60*60*1000;
+  } else {
+    expiration = "life";
+  }
+
+  localStorage.setItem("nfc_key", key);
+  localStorage.setItem("nfc_exp", expiration);
+
+  document.getElementById("status").innerHTML =
+    "✅ Paiement validé !<br>Clé générée : <b>" + key + "</b><br><br>" +
+    "<button class='btn' onclick=\"window.location.href='index.html'\">Retour</button>";
+
+  document.getElementById("paiement").style.display = "none";
+}
+</script>
+
+</body>
+</html>
