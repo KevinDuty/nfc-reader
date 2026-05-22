@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Achat de clé</title>
 
+<script>
+// --- BAN CHECK ---
+(function() {
+  const ban = localStorage.getItem("ban_until");
+  if (ban && Number(ban) > Date.now()) {
+    window.location.href = "ban.html";
+  }
+})();
+</script>
+
 <style>
 body {
   margin: 0;
