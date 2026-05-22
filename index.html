@@ -6,9 +6,13 @@
 <title>Accès NFC</title>
 
 <script>
+// ⚙️ CONFIG GLOBALE
+const ADMIN_KEY = "nfcreader_SUPERADMIN";
+const BAN_INITIAL_MS = 7 * 24 * 60 * 60 * 1000;      // 7 jours
+const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;    // 1 an
+
 // --- INIT DEVICE + BAN CHECK ---
 (function() {
-  // Device ID
   if (!localStorage.getItem("device_id")) {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let id = "";
@@ -16,7 +20,6 @@
     localStorage.setItem("device_id", "device_" + id);
   }
 
-  // Ban check
   const ban = localStorage.getItem("ban_until");
   if (ban && Number(ban) > Date.now()) {
     window.location.href = "ban.html";
@@ -25,79 +28,222 @@
 </script>
 
 <style>
+:root {
+  --bg: #050816;
+  --card: rgba(15, 23, 42, 0.85);
+  --accent: #22d3ee;
+  --accent-soft: rgba(34, 211, 238, 0.2);
+  --danger: #f97373;
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+}
+
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
-  padding: 0;
-  font-family: Arial;
-  background: linear-gradient(135deg, #0a0f24, #001a33);
-  color: white;
-  text-align: center;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #1d2b64 0, #050816 55%, #000 100%);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .container {
-  padding: 20px;
-  max-width: 500px;
-  margin: auto;
+  width: 100%;
+  max-width: 420px;
+  padding: 24px;
 }
-h1 { text-shadow: 0 0 10px cyan; }
+
+.card {
+  background: var(--card);
+  border-radius: 24px;
+  padding: 24px 20px 20px;
+  box-shadow:
+    0 0 40px rgba(15, 23, 42, 0.9),
+    0 0 80px rgba(34, 211, 238, 0.25);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  backdrop-filter: blur(18px);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title span.icon {
+  font-size: 26px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
 input {
   width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 10px;
-  border: none;
-  font-size: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(15, 23, 42, 0.8);
+  color: var(--text-main);
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
 }
+
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4);
+}
+
 .btn {
   width: 100%;
-  padding: 15px;
-  margin: 10px 0;
-  font-size: 18px;
+  padding: 12px 14px;
+  border-radius: 999px;
   border: none;
-  border-radius: 12px;
-  background: rgba(0,255,255,0.15);
-  color: cyan;
-  box-shadow: 0 0 10px cyan;
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: 0.18s;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #22d3ee, #38bdf8);
+  color: #020617;
+  box-shadow:
+    0 10px 25px rgba(56, 189, 248, 0.35),
+    0 0 20px rgba(34, 211, 238, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 14px 30px rgba(56, 189, 248, 0.45),
+    0 0 26px rgba(34, 211, 238, 0.55);
+}
+
+.btn-ghost {
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--text-main);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.btn-ghost:hover {
+  background: rgba(15, 23, 42, 1);
+  border-color: var(--accent);
+}
+
+.section {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(148, 163, 184, 0.4);
+}
+
+.section-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.time-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  font-size: 13px;
+}
+
+.time-pill span.icon {
+  color: var(--accent);
+}
+
+#status {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--danger);
+  min-height: 16px;
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>🔐 Accès NFC</h1>
+  <div class="card">
+    <div class="title">
+      <span class="icon">🔐</span>
+      <span>Accès NFC</span>
+    </div>
+    <div class="subtitle">
+      Entre ta clé d’accès ou utilise la clé admin pour gérer.
+    </div>
 
-  <p>Entre ta clé d’accès :</p>
-  <input id="keyInput" placeholder="nfcreader_XXXX">
+    <div>
+      <label for="keyInput">Clé d’accès</label>
+      <input id="keyInput" placeholder="nfcreader_XXXX">
+      <button class="btn btn-primary" onclick="validerCle()">
+        Continuer
+      </button>
+    </div>
 
-  <button class="btn" onclick="validerCle()">Continuer</button>
+    <div class="section">
+      <div class="section-title">Abonnement</div>
+      <div class="time-pill">
+        <span class="icon">⏳</span>
+        <span id="timeLeft">Aucune clé</span>
+      </div>
 
-  <h3>⏳ Temps restant :</h3>
-  <p id="timeLeft">—</p>
+      <button class="btn btn-ghost" onclick="window.location.href='buy.html'">
+        Acheter une clé
+      </button>
+    </div>
 
-  <button class="btn" onclick="window.location.href='buy.html'">
-    Acheter une clé
-  </button>
-
-  <p id="status"></p>
+    <div id="status"></div>
+  </div>
 </div>
 
 <script>
-const ADMIN_KEY = "nfcreader_ADMINMASTER";
-
 function afficherTemps() {
   const exp = localStorage.getItem("nfc_exp");
+  const el = document.getElementById("timeLeft");
+
   if (!exp) {
-    document.getElementById("timeLeft").textContent = "Aucune clé";
+    el.textContent = "Aucune clé";
     return;
   }
 
   if (exp === "life") {
-    document.getElementById("timeLeft").textContent = "À vie";
+    el.textContent = "Abonnement à vie";
     return;
   }
 
   const reste = Number(exp) - Date.now();
   if (reste <= 0) {
-    document.getElementById("timeLeft").textContent = "Expirée";
+    el.textContent = "Clé expirée";
     return;
   }
 
@@ -105,8 +251,7 @@ function afficherTemps() {
   const heures = Math.floor((reste / (1000*60*60)) % 24);
   const minutes = Math.floor((reste / (1000*60)) % 60);
 
-  document.getElementById("timeLeft").textContent =
-    `${jours}j ${heures}h ${minutes}m`;
+  el.textContent = `${jours}j ${heures}h ${minutes}m restants`;
 }
 
 afficherTemps();
@@ -115,6 +260,7 @@ function validerCle() {
   const input = document.getElementById("keyInput").value.trim();
   const key = localStorage.getItem("nfc_key");
   const exp = localStorage.getItem("nfc_exp");
+  const status = document.getElementById("status");
 
   // Admin direct
   if (input === ADMIN_KEY) {
@@ -124,21 +270,22 @@ function validerCle() {
   }
 
   if (!key) {
-    document.getElementById("status").textContent = "❌ Aucune clé enregistrée.";
+    status.textContent = "❌ Aucune clé enregistrée sur cet appareil.";
     return;
   }
 
   if (input !== key) {
-    document.getElementById("status").textContent = "❌ Clé incorrecte.";
+    status.textContent = "❌ Clé incorrecte.";
     return;
   }
 
   if (exp !== "life" && Date.now() > Number(exp)) {
-    document.getElementById("status").textContent = "❌ Clé expirée.";
+    status.textContent = "❌ Clé expirée.";
     return;
   }
 
   localStorage.setItem("is_admin", "false");
+  status.textContent = "";
   window.location.href = "nfc.html";
 }
 </script>
