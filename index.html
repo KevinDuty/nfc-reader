@@ -1,279 +1,118 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NFC Web App + Abonnement</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accès NFC</title>
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #0a0f24, #001a33);
-      color: white;
-      text-align: center;
-    }
-
-    .container {
-      padding: 20px;
-      max-width: 500px;
-      margin: auto;
-    }
-
-    h1 {
-      font-size: 26px;
-      margin-bottom: 10px;
-      text-shadow: 0 0 10px cyan;
-    }
-
-    h2 {
-      font-size: 20px;
-      margin-top: 30px;
-      margin-bottom: 10px;
-      text-shadow: 0 0 8px #ffb347;
-    }
-
-    p {
-      opacity: 0.8;
-      margin-bottom: 15px;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 15px;
-      margin: 8px 0;
-      font-size: 18px;
-      border: none;
-      border-radius: 12px;
-      background: rgba(0, 255, 255, 0.15);
-      color: cyan;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 0 10px cyan;
-      transition: 0.2s;
-    }
-
-    .btn:hover {
-      background: rgba(0, 255, 255, 0.3);
-      transform: scale(1.03);
-    }
-
-    #status {
-      margin-top: 20px;
-      font-size: 18px;
-      text-shadow: 0 0 8px cyan;
-      min-height: 24px;
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      font-size: 16px;
-    }
-
-    .small {
-      font-size: 13px;
-      opacity: 0.7;
-      margin-top: 10px;
-    }
-
-    .card-box {
-      margin-top: 10px;
-      padding: 15px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.05);
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-    }
-
-    .success {
-      color: #7CFC00;
-      text-shadow: 0 0 6px #7CFC00;
-    }
-
-    .error {
-      color: #ff4d4d;
-      text-shadow: 0 0 6px #ff4d4d;
-    }
-  </style>
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg, #0a0f24, #001a33);
+  color: white;
+  text-align: center;
+}
+.container {
+  padding: 20px;
+  max-width: 500px;
+  margin: auto;
+}
+h1 { text-shadow: 0 0 10px cyan; }
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+}
+.btn {
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0;
+  font-size: 18px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(0,255,255,0.15);
+  color: cyan;
+  box-shadow: 0 0 10px cyan;
+}
+</style>
 </head>
 <body>
 
 <div class="container">
-  <h1>NFC Web App</h1>
-  <p>Chrome Android + NFC activé obligatoire.</p>
+  <h1>🔐 Accès NFC</h1>
 
-  <!-- ZONE NFC -->
-  <h2>Contrôle de la puce NFC</h2>
+  <p>Entre ta clé d’accès :</p>
+  <input id="keyInput" placeholder="nfcreader_XXXX">
 
-  <input id="textToWrite" type="text" placeholder="Texte à écrire sur la puce">
-  <input id="urlToWrite" type="text" placeholder="URL à écrire (optionnel, ex: https://...)">
+  <button class="btn" onclick="validerCle()">Continuer</button>
 
-  <button class="btn" onclick="lire()">📡 Lire la puce</button>
-  <button class="btn" onclick="ecrireTexte()">✨ Écrire le texte</button>
-  <button class="btn" onclick="ecrireURL()">🔗 Écrire l'URL</button>
-  <button class="btn" onclick="effacer()">🧹 Effacer (écrire message vide)</button>
+  <h3>⏳ Temps restant :</h3>
+  <p id="timeLeft">—</p>
 
-  <p id="status">En attente…</p>
+  <button class="btn" onclick="window.location.href='buy.html'">
+    Acheter une clé
+  </button>
 
-  <!-- ZONE ABONNEMENT -->
-  <h2>Abonnement (simulation)</h2>
-  <div class="card-box">
-    <p>
-      Ce système d'abonnement est <b>100 % simulé</b>.<br>
-      Même si tu mets n'importe quoi comme numéro de carte, date ou CVC,<br>
-      <span class="success">ça marchera quand même</span>.<br>
-      <span class="small">(Aucune vraie transaction, aucun paiement réel.)</span>
-    </p>
-
-    <input id="cardNumber" type="text" placeholder="Numéro de carte (simulation)">
-    <input id="cardDate" type="text" placeholder="Date d'expiration (MM/AA)">
-    <input id="cardCVC" type="text" placeholder="CVC">
-
-    <button class="btn" onclick="validerAbonnement()">💳 Valider l'abonnement (faux)</button>
-
-    <p id="subStatus"></p>
-  </div>
-
-  <p class="small">Si ça dit “non supporté”, vérifie : Android + Chrome + NFC activé.</p>
+  <p id="status"></p>
 </div>
 
 <script>
-function setStatus(msg) {
-  document.getElementById("status").textContent = msg;
-}
-
-function setSubStatus(msg, ok = true) {
-  const el = document.getElementById("subStatus");
-  el.textContent = msg;
-  el.className = ok ? "success" : "error";
-}
-
-function checkNFC() {
-  if (!("NDEFReader" in window)) {
-    setStatus("❌ Web NFC non supporté. Utilise Chrome sur Android.");
-    return false;
-  }
-  return true;
-}
-
-// 📡 LIRE
-async function lire() {
-  if (!checkNFC()) return;
-
-  try {
-    const reader = new NDEFReader();
-    await reader.scan();
-    setStatus("Approche une étiquette NFC…");
-
-    reader.onreading = event => {
-      let result = "";
-      for (const record of event.message.records) {
-        if (record.recordType === "text") {
-          const text = new TextDecoder().decode(record.data);
-          result += `Texte : ${text} `;
-        } else if (record.recordType === "url") {
-          const url = new TextDecoder().decode(record.data);
-          result += `URL : ${url} `;
-        } else {
-          result += `[Type ${record.recordType}] `;
-        }
-      }
-      setStatus(result || "📡 Lu, mais aucun texte/URL lisible trouvé.");
-    };
-
-    reader.onreadingerror = () => {
-      setStatus("Erreur de lecture. Réessaie.");
-    };
-  } catch (err) {
-    setStatus("Erreur : " + err);
-  }
-}
-
-// ✨ ÉCRIRE TEXTE
-async function ecrireTexte() {
-  if (!checkNFC()) return;
-
-  const text = document.getElementById("textToWrite").value || "Hello NFC";
-
-  try {
-    const writer = new NDEFReader();
-    await writer.write({
-      records: [
-        {
-          recordType: "text",
-          data: text
-        }
-      ]
-    });
-    setStatus("✅ Texte écrit : " + text + " — approche une étiquette.");
-  } catch (err) {
-    setStatus("Erreur d'écriture : " + err);
-  }
-}
-
-// 🔗 ÉCRIRE URL
-async function ecrireURL() {
-  if (!checkNFC()) return;
-
-  const url = document.getElementById("urlToWrite").value;
-  if (!url) {
-    setStatus("Entre une URL avant d'écrire.");
+// Affichage du temps restant
+function afficherTemps() {
+  const exp = localStorage.getItem("nfc_exp");
+  if (!exp) {
+    document.getElementById("timeLeft").textContent = "Aucune clé";
     return;
   }
 
-  try {
-    const writer = new NDEFReader();
-    await writer.write({
-      records: [
-        {
-          recordType: "url",
-          data: url
-        }
-      ]
-    });
-    setStatus("✅ URL écrite : " + url + " — approche une étiquette.");
-  } catch (err) {
-    setStatus("Erreur d'écriture : " + err);
-  }
-}
-
-// 🧹 EFFACER (écrire message vide)
-async function effacer() {
-  if (!checkNFC()) return;
-
-  try {
-    const writer = new NDEFReader();
-    await writer.write({
-      records: [
-        {
-          recordType: "text",
-          data: ""
-        }
-      ]
-    });
-    setStatus("🧹 Étiquette nettoyée (texte vide écrit).");
-  } catch (err) {
-    setStatus("Erreur lors de l'effacement : " + err);
-  }
-}
-
-// 💳 ABONNEMENT SIMULÉ
-function validerAbonnement() {
-  const num = document.getElementById("cardNumber").value;
-  const date = document.getElementById("cardDate").value;
-  const cvc = document.getElementById("cardCVC").value;
-
-  // On prévient clairement que tout passe
-  if (!num || !date || !cvc) {
-    setSubStatus("Remplis les champs (même avec n'importe quoi, ça marchera, c'est une simulation).", false);
+  if (exp === "life") {
+    document.getElementById("timeLeft").textContent = "À vie";
     return;
   }
 
-  setSubStatus("✅ Abonnement activé (simulation). Aucun vrai paiement n'a été effectué.");
+  const reste = Number(exp) - Date.now();
+  if (reste <= 0) {
+    document.getElementById("timeLeft").textContent = "Expirée";
+    return;
+  }
+
+  const jours = Math.floor(reste / (1000*60*60*24));
+  const heures = Math.floor((reste / (1000*60*60)) % 24);
+  const minutes = Math.floor((reste / (1000*60)) % 60);
+
+  document.getElementById("timeLeft").textContent =
+    `${jours}j ${heures}h ${minutes}m`;
+}
+
+afficherTemps();
+
+// Vérification clé
+function validerCle() {
+  const input = document.getElementById("keyInput").value;
+  const key = localStorage.getItem("nfc_key");
+  const exp = localStorage.getItem("nfc_exp");
+
+  if (!key) {
+    document.getElementById("status").textContent = "❌ Aucune clé enregistrée.";
+    return;
+  }
+
+  if (input !== key) {
+    document.getElementById("status").textContent = "❌ Clé incorrecte.";
+    return;
+  }
+
+  if (exp !== "life" && Date.now() > Number(exp)) {
+    document.getElementById("status").textContent = "❌ Clé expirée.";
+    return;
+  }
+
+  window.location.href = "nfc.html";
 }
 </script>
 
