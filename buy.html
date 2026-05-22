@@ -6,15 +6,20 @@
 <title>Achat de clé</title>
 
 <script>
-// ⚙️ CONFIG GLOBALE
+// ⚙️ CONFIG
 const ADMIN_KEY = "nfcreader_SUPERADMIN";
 const BAN_INITIAL_MS = 7 * 24 * 60 * 60 * 1000;
 const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;
 
-// --- BAN CHECK ---
+// Ne jamais bannir un admin
+if (localStorage.getItem("is_admin") === "true") {
+  localStorage.removeItem("ban_until");
+}
+
+// Ban check
 (function() {
   const ban = localStorage.getItem("ban_until");
-  if (ban && Number(ban) > Date.now()) {
+  if (ban && Number(ban) > Date.now() && localStorage.getItem("is_admin") !== "true") {
     window.location.href = "ban.html";
   }
 })();
@@ -26,8 +31,6 @@ const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;
   --bg: #050816;
   --card: rgba(15, 23, 42, 0.85);
   --accent: #22d3ee;
-  --accent-soft: rgba(34, 211, 238, 0.2);
-  --danger: #f97373;
   --text-main: #e5e7eb;
   --text-muted: #9ca3af;
 }
@@ -37,7 +40,7 @@ const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: system-ui, sans-serif;
   background: radial-gradient(circle at top, #1d2b64 0, #050816 55%, #000 100%);
   color: var(--text-main);
   display: flex;
@@ -45,75 +48,42 @@ body {
   justify-content: center;
 }
 
-.container {
-  width: 100%;
-  max-width: 420px;
-  padding: 24px;
-}
+.container { width: 100%; max-width: 420px; padding: 24px; }
 
 .card {
   background: var(--card);
   border-radius: 24px;
-  padding: 24px 20px 20px;
-  box-shadow:
-    0 0 40px rgba(15, 23, 42, 0.9),
-    0 0 80px rgba(34, 211, 238, 0.25);
-  border: 1px solid rgba(148, 163, 184, 0.25);
+  padding: 24px;
   backdrop-filter: blur(18px);
+  border: 1px solid rgba(148,163,184,0.25);
+  box-shadow: 0 0 40px rgba(15,23,42,0.9), 0 0 80px rgba(34,211,238,0.25);
 }
 
-.title {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.title { font-size: 24px; font-weight: 700; display: flex; gap: 8px; }
+.title span.icon { font-size: 26px; }
 
-.title span.icon {
-  font-size: 26px;
-}
-
-.subtitle {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 20px;
-}
+.subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
 
 .offer {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15,23,42,0.7);
+  border: 1px solid rgba(148,163,184,0.4);
   padding: 16px;
   border-radius: 18px;
   margin-bottom: 14px;
 }
 
-.offer h3 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.offer p {
-  margin: 4px 0 10px;
-  font-size: 13px;
-  color: var(--text-muted);
-}
+.offer h3 { margin: 0; font-size: 18px; }
+.offer p { margin: 4px 0 10px; font-size: 13px; color: var(--text-muted); }
 
 .btn {
   width: 100%;
-  padding: 12px 14px;
+  padding: 12px;
   border-radius: 999px;
   border: none;
   margin-top: 10px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: 0.18s;
 }
 
 .btn-primary {
@@ -122,17 +92,17 @@ body {
 }
 
 .btn-ghost {
-  background: rgba(15, 23, 42, 0.9);
+  background: rgba(15,23,42,0.9);
   color: var(--text-main);
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  border: 1px solid rgba(148,163,184,0.5);
 }
 
 input {
   width: 100%;
   padding: 12px;
   border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.5);
-  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148,163,184,0.5);
+  background: rgba(15,23,42,0.8);
   color: var(--text-main);
   margin-bottom: 10px;
 }
@@ -143,23 +113,19 @@ input {
 <div class="container">
   <div class="card">
 
-    <div class="title">
-      <span class="icon">🛒</span>
-      <span>Achat de clé</span>
-    </div>
-
+    <div class="title"><span class="icon">🛒</span><span>Achat de clé</span></div>
     <div class="subtitle">Choisis une formule d’abonnement.</div>
 
     <div id="choix">
       <div class="offer">
         <h3>Simple — 3€</h3>
-        <p>Accès pendant 1 mois.</p>
+        <p>Accès 1 mois.</p>
         <button class="btn btn-primary" onclick="choisir('simple')">Choisir</button>
       </div>
 
       <div class="offer">
         <h3>Projet — 5€</h3>
-        <p>Accès pendant 1 an.</p>
+        <p>Accès 1 an.</p>
         <button class="btn btn-primary" onclick="choisir('projet')">Choisir</button>
       </div>
 
