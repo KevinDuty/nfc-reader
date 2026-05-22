@@ -21,11 +21,13 @@ const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;
 </script>
 
 <style>
+/* 🔥 STYLE IDENTIQUE À index.html */
 :root {
   --bg: #050816;
-  --card: rgba(15, 23, 42, 0.9);
+  --card: rgba(15, 23, 42, 0.85);
   --accent: #22d3ee;
   --accent-soft: rgba(34, 211, 238, 0.2);
+  --danger: #f97373;
   --text-main: #e5e7eb;
   --text-muted: #9ca3af;
 }
@@ -45,7 +47,7 @@ body {
 
 .container {
   width: 100%;
-  max-width: 460px;
+  max-width: 420px;
   padding: 24px;
 }
 
@@ -61,7 +63,7 @@ body {
 }
 
 .title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   margin-bottom: 4px;
   display: flex;
@@ -70,57 +72,47 @@ body {
 }
 
 .title span.icon {
-  font-size: 24px;
+  font-size: 26px;
 }
 
 .subtitle {
   font-size: 13px;
   color: var(--text-muted);
-  margin-bottom: 18px;
-}
-
-.offers {
-  display: grid;
-  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .offer {
-  border-radius: 18px;
-  padding: 14px 14px 12px;
-  background: radial-gradient(circle at top left, rgba(34,211,238,0.18), rgba(15,23,42,0.95));
+  background: rgba(15, 23, 42, 0.7);
   border: 1px solid rgba(148, 163, 184, 0.4);
+  padding: 16px;
+  border-radius: 18px;
+  margin-bottom: 14px;
 }
 
-.offer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 4px;
+.offer h3 {
+  margin: 0;
+  font-size: 18px;
 }
 
-.offer-name {
-  font-weight: 600;
-}
-
-.offer-price {
-  font-size: 14px;
-  color: var(--accent);
-}
-
-.offer-desc {
-  font-size: 12px;
+.offer p {
+  margin: 4px 0 10px;
+  font-size: 13px;
   color: var(--text-muted);
-  margin-bottom: 8px;
 }
 
 .btn {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: 999px;
   border: none;
-  font-size: 14px;
+  margin-top: 10px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   transition: 0.18s;
 }
 
@@ -129,62 +121,20 @@ body {
   color: #020617;
 }
 
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow:
-    0 10px 25px rgba(56, 189, 248, 0.35),
-    0 0 20px rgba(34, 211, 238, 0.4);
-}
-
 .btn-ghost {
   background: rgba(15, 23, 42, 0.9);
   color: var(--text-main);
   border: 1px solid rgba(148, 163, 184, 0.5);
-  margin-top: 10px;
-}
-
-.btn-ghost:hover {
-  border-color: var(--accent);
-}
-
-.pay {
-  margin-top: 12px;
-}
-
-label {
-  display: block;
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 4px;
 }
 
 input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px;
   border-radius: 12px;
   border: 1px solid rgba(148, 163, 184, 0.5);
   background: rgba(15, 23, 42, 0.8);
   color: var(--text-main);
-  font-size: 14px;
-  outline: none;
-  margin-bottom: 8px;
-}
-
-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4);
-}
-
-.info-sim {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-
-#status {
-  margin-top: 10px;
-  font-size: 13px;
-  min-height: 18px;
+  margin-bottom: 10px;
 }
 </style>
 </head>
@@ -192,66 +142,49 @@ input:focus {
 
 <div class="container">
   <div class="card">
+
     <div class="title">
       <span class="icon">🛒</span>
       <span>Achat de clé</span>
     </div>
-    <div class="subtitle">
-      Choisis une formule. Le paiement est entièrement simulé.
-    </div>
 
-    <div id="choix" class="offers">
+    <div class="subtitle">Choisis une formule d’abonnement.</div>
+
+    <div id="choix">
       <div class="offer">
-        <div class="offer-header">
-          <span class="offer-name">Simple</span>
-          <span class="offer-price">3€</span>
-        </div>
-        <div class="offer-desc">Accès pendant 1 mois.</div>
-        <button class="btn btn-primary" onclick="choisir('simple')">Choisir Simple</button>
+        <h3>Simple — 3€</h3>
+        <p>Accès pendant 1 mois.</p>
+        <button class="btn btn-primary" onclick="choisir('simple')">Choisir</button>
       </div>
 
       <div class="offer">
-        <div class="offer-header">
-          <span class="offer-name">Projet</span>
-          <span class="offer-price">5€</span>
-        </div>
-        <div class="offer-desc">Accès pendant 1 an.</div>
-        <button class="btn btn-primary" onclick="choisir('projet')">Choisir Projet</button>
+        <h3>Projet — 5€</h3>
+        <p>Accès pendant 1 an.</p>
+        <button class="btn btn-primary" onclick="choisir('projet')">Choisir</button>
       </div>
 
       <div class="offer">
-        <div class="offer-header">
-          <span class="offer-name">Start‑Up</span>
-          <span class="offer-price">15€</span>
-        </div>
-        <div class="offer-desc">Accès à vie.</div>
-        <button class="btn btn-primary" onclick="choisir('startup')">Choisir Start‑Up</button>
+        <h3>Start‑Up — 15€</h3>
+        <p>Accès à vie.</p>
+        <button class="btn btn-primary" onclick="choisir('startup')">Choisir</button>
       </div>
     </div>
 
-    <div id="paiement" class="pay" style="display:none;">
-      <div class="info-sim">
-        💳 Paiement simulé : tu peux mettre n’importe quoi, ça marchera.
-      </div>
+    <div id="paiement" style="display:none;">
+      <div class="subtitle">Paiement simulé (n’importe quoi fonctionne)</div>
 
-      <label>Numéro de carte</label>
-      <input id="cardNum" placeholder="0000 0000 0000 0000">
-
-      <label>Date d'expiration</label>
+      <input id="cardNum" placeholder="Numéro de carte">
       <input id="cardDate" placeholder="MM/AA">
+      <input id="cardCVC" placeholder="CVC">
 
-      <label>CVC</label>
-      <input id="cardCVC" placeholder="123">
-
-      <button class="btn btn-primary" onclick="payer()">Valider le paiement</button>
+      <button class="btn btn-primary" onclick="payer()">Valider</button>
       <button class="btn btn-ghost" onclick="annuler()">Annuler</button>
     </div>
 
-    <button class="btn btn-ghost" onclick="window.location.href='index.html'">
-      ⬅ Retour
-    </button>
+    <button class="btn btn-ghost" onclick="window.location.href='index.html'">⬅ Retour</button>
 
     <div id="status"></div>
+
   </div>
 </div>
 
@@ -265,10 +198,8 @@ function choisir(type) {
 }
 
 function annuler() {
-  typeAbonnement = null;
   document.getElementById("paiement").style.display = "none";
-  document.getElementById("choix").style.display = "grid";
-  document.getElementById("status").textContent = "";
+  document.getElementById("choix").style.display = "block";
 }
 
 function genererCle() {
@@ -279,25 +210,18 @@ function genererCle() {
 }
 
 function payer() {
-  if (!typeAbonnement) return;
-
   const key = genererCle();
   let expiration;
 
-  if (typeAbonnement === "simple") {
-    expiration = Date.now() + 30*24*60*60*1000;
-  } else if (typeAbonnement === "projet") {
-    expiration = Date.now() + 365*24*60*60*1000;
-  } else {
-    expiration = "life";
-  }
+  if (typeAbonnement === "simple") expiration = Date.now() + 30*24*60*60*1000;
+  else if (typeAbonnement === "projet") expiration = Date.now() + 365*24*60*60*1000;
+  else expiration = "life";
 
   localStorage.setItem("nfc_key", key);
   localStorage.setItem("nfc_exp", expiration);
 
   document.getElementById("status").innerHTML =
-    "✅ Paiement validé !<br>Clé générée : <b>" + key + "</b><br><br>" +
-    "Tu peux maintenant revenir à l'écran d'accès.";
+    "✅ Paiement validé !<br>Clé : <b>" + key + "</b>";
 
   document.getElementById("paiement").style.display = "none";
 }
