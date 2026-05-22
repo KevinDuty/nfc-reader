@@ -6,36 +6,21 @@
 <title>NFC Reader</title>
 
 <script>
-// ⚙️ CONFIG GLOBALE
+// ⚙️ CONFIG
 const ADMIN_KEY = "nfcreader_SUPERADMIN";
 const BAN_INITIAL_MS = 7 * 24 * 60 * 60 * 1000;
 const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;
 
-// --- BAN + ACCÈS PROTÉGÉ ---
+// Ne jamais bannir un admin
+if (localStorage.getItem("is_admin") === "true") {
+  localStorage.removeItem("ban_until");
+}
+
+// BAN CHECK
 (function() {
   const ban = localStorage.getItem("ban_until");
-  if (ban && Number(ban) > Date.now()) {
+  if (ban && Number(ban) > Date.now() && localStorage.getItem("is_admin") !== "true") {
     window.location.href = "ban.html";
-    return;
-  }
-
-  const key = localStorage.getItem("nfc_key");
-  const exp = localStorage.getItem("nfc_exp");
-  const isAdmin = localStorage.getItem("is_admin") === "true";
-
-  if (!isAdmin) {
-    if (!key) {
-      const banTime = Date.now() + BAN_INITIAL_MS;
-      localStorage.setItem("ban_until", banTime);
-      window.location.href = "ban.html";
-      return;
-    }
-    if (exp !== "life" && Date.now() > Number(exp)) {
-      const banTime = Date.now() + BAN_INITIAL_MS;
-      localStorage.setItem("ban_until", banTime);
-      window.location.href = "ban.html";
-      return;
-    }
   }
 })();
 </script>
@@ -46,8 +31,6 @@ const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;
   --bg: #050816;
   --card: rgba(15, 23, 42, 0.85);
   --accent: #22d3ee;
-  --accent-soft: rgba(34, 211, 238, 0.2);
-  --danger: #f97373;
   --text-main: #e5e7eb;
   --text-muted: #9ca3af;
 }
@@ -57,7 +40,7 @@ const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: system-ui, sans-serif;
   background: radial-gradient(circle at top, #1d2b64 0, #050816 55%, #000 100%);
   color: var(--text-main);
   display: flex;
@@ -65,73 +48,41 @@ body {
   justify-content: center;
 }
 
-.container {
-  width: 100%;
-  max-width: 420px;
-  padding: 24px;
-}
+.container { width: 100%; max-width: 420px; padding: 24px; }
 
 .card {
   background: var(--card);
   border-radius: 24px;
-  padding: 24px 20px 20px;
-  box-shadow:
-    0 0 40px rgba(15, 23, 42, 0.9),
-    0 0 80px rgba(34, 211, 238, 0.25);
-  border: 1px solid rgba(148, 163, 184, 0.25);
+  padding: 24px;
   backdrop-filter: blur(18px);
+  border: 1px solid rgba(148,163,184,0.25);
+  box-shadow: 0 0 40px rgba(15,23,42,0.9), 0 0 80px rgba(34,211,238,0.25);
 }
 
-.title {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.title { font-size: 24px; font-weight: 700; display: flex; gap: 8px; }
+.title span.icon { font-size: 26px; }
 
-.title span.icon {
-  font-size: 26px;
-}
-
-.subtitle {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 20px;
-}
+.subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
 
 input {
   width: 100%;
-  padding: 12px 14px;
+  padding: 12px;
   border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.5);
-  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148,163,184,0.5);
+  background: rgba(15,23,42,0.8);
   color: var(--text-main);
-  font-size: 14px;
-  outline: none;
   margin-bottom: 10px;
-}
-
-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4);
 }
 
 .btn {
   width: 100%;
-  padding: 12px 14px;
+  padding: 12px;
   border-radius: 999px;
   border: none;
   margin-top: 10px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: 0.18s;
 }
 
 .btn-primary {
@@ -140,9 +91,9 @@ input:focus {
 }
 
 .btn-ghost {
-  background: rgba(15, 23, 42, 0.9);
+  background: rgba(15,23,42,0.9);
   color: var(--text-main);
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  border: 1px solid rgba(148,163,184,0.5);
 }
 
 #status {
@@ -156,21 +107,13 @@ input:focus {
   margin-top: 20px;
   padding: 16px;
   border-radius: 18px;
-  background: rgba(34, 211, 238, 0.08);
-  border: 1px solid rgba(34, 211, 238, 0.25);
+  background: rgba(34,211,238,0.08);
+  border: 1px solid rgba(34,211,238,0.25);
   display: none;
 }
 
-#adminPanel h2 {
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-#adminInfo {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 10px;
-}
+#adminPanel h2 { font-size: 16px; margin-bottom: 10px; }
+#adminInfo { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -178,11 +121,7 @@ input:focus {
 <div class="container">
   <div class="card">
 
-    <div class="title">
-      <span class="icon">📡</span>
-      <span>NFC Reader</span>
-    </div>
-
+    <div class="title"><span class="icon">📡</span><span>NFC Reader</span></div>
     <div class="subtitle">Chrome Android + NFC activé obligatoire.</div>
 
     <input id="textToWrite" placeholder="Texte à écrire">
@@ -236,129 +175,4 @@ function refreshAdminInfo() {
   const key = localStorage.getItem("nfc_key");
   const exp = localStorage.getItem("nfc_exp");
   const ban = localStorage.getItem("ban_until");
-  const device = localStorage.getItem("device_id");
-
-  let expText = exp === "life" ? "À vie" : new Date(Number(exp)).toLocaleString();
-  if (!exp) expText = "Aucune";
-
-  let banText = "Pas banni";
-  if (ban && Number(ban) > Date.now()) {
-    banText = "Banni jusqu'au " + new Date(Number(ban)).toLocaleString();
-  }
-
-  info.innerHTML =
-    "DeviceID : " + device + "<br>" +
-    "Clé : " + (key || "aucune") + "<br>" +
-    "Expiration : " + expText + "<br>" +
-    "Ban : " + banText;
-}
-
-(function() {
-  if (localStorage.getItem("is_admin") === "true") {
-    document.getElementById("adminPanel").style.display = "block";
-    refreshAdminInfo();
-  }
-})();
-
-function clearBan() {
-  localStorage.removeItem("ban_until");
-  alert("Débanni.");
-  refreshAdminInfo();
-}
-
-function extendSub(days) {
-  let exp = localStorage.getItem("nfc_exp");
-  if (!exp || exp === "life") exp = Date.now();
-  else exp = Number(exp);
-
-  const newExp = exp + days * 24 * 60 * 60 * 1000;
-  localStorage.setItem("nfc_exp", newExp);
-  alert("Abonnement prolongé.");
-  refreshAdminInfo();
-}
-
-function setLife() {
-  localStorage.setItem("nfc_exp", "life");
-  alert("Abonnement à vie.");
-  refreshAdminInfo();
-}
-
-function banDevice() {
-  const banTime = Date.now() + BAN_INITIAL_MS;
-  localStorage.setItem("ban_until", banTime);
-  alert("Appareil banni.");
-  refreshAdminInfo();
-}
-
-function resetAll() {
-  localStorage.clear();
-  alert("Reset complet.");
-  location.reload();
-}
-
-// NFC FUNCTIONS
-async function lire() {
-  if (!checkNFC()) return;
-
-  try {
-    const reader = new NDEFReader();
-    await reader.scan();
-    setStatus("Approche une étiquette…");
-
-    reader.onreading = event => {
-      let result = "";
-      for (const record of event.message.records) {
-        const text = new TextDecoder().decode(record.data);
-        result += text + " ";
-      }
-      setStatus(result || "Aucune donnée.");
-    };
-  } catch (err) {
-    setStatus("Erreur : " + err, true);
-  }
-}
-
-async function ecrireTexte() {
-  if (!checkNFC()) return;
-
-  const text = document.getElementById("textToWrite").value || "Hello NFC";
-
-  try {
-    const writer = new NDEFReader();
-    await writer.write({ records: [{ recordType: "text", data: text }] });
-    setStatus("Texte écrit.");
-  } catch (err) {
-    setStatus("Erreur : " + err, true);
-  }
-}
-
-async function ecrireURL() {
-  if (!checkNFC()) return;
-
-  const url = document.getElementById("urlToWrite").value;
-  if (!url) return setStatus("Entre une URL.", true);
-
-  try {
-    const writer = new NDEFReader();
-    await writer.write({ records: [{ recordType: "url", data: url }] });
-    setStatus("URL écrite.");
-  } catch (err) {
-    setStatus("Erreur : " + err, true);
-  }
-}
-
-async function effacer() {
-  if (!checkNFC()) return;
-
-  try {
-    const writer = new NDEFReader();
-    await writer.write({ records: [{ recordType: "text", data: "" }] });
-    setStatus("Étiquette effacée.");
-  } catch (err) {
-    setStatus("Erreur : " + err, true);
-  }
-}
-</script>
-
-</body>
-</html>
+  const device = localStorage.getItem("device
