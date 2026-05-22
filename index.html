@@ -8,11 +8,17 @@
 <script>
 // ⚙️ CONFIG GLOBALE
 const ADMIN_KEY = "nfcreader_SUPERADMIN";
-const BAN_INITIAL_MS = 7 * 24 * 60 * 60 * 1000;      // 7 jours
-const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;    // 1 an
+const BAN_INITIAL_MS = 7 * 24 * 60 * 60 * 1000;
+const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;
 
 // --- INIT DEVICE + BAN CHECK ---
 (function() {
+
+  // Ne jamais bannir un admin
+  if (localStorage.getItem("is_admin") === "true") {
+    localStorage.removeItem("ban_until");
+  }
+
   if (!localStorage.getItem("device_id")) {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let id = "";
@@ -21,13 +27,14 @@ const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;    // 1 an
   }
 
   const ban = localStorage.getItem("ban_until");
-  if (ban && Number(ban) > Date.now()) {
+  if (ban && Number(ban) > Date.now() && localStorage.getItem("is_admin") !== "true") {
     window.location.href = "ban.html";
   }
 })();
 </script>
 
 <style>
+/* 🔥 STYLE IDENTIQUE POUR TOUTES LES PAGES */
 :root {
   --bg: #050816;
   --card: rgba(15, 23, 42, 0.85);
@@ -130,16 +137,6 @@ input:focus {
 .btn-primary {
   background: linear-gradient(135deg, #22d3ee, #38bdf8);
   color: #020617;
-  box-shadow:
-    0 10px 25px rgba(56, 189, 248, 0.35),
-    0 0 20px rgba(34, 211, 238, 0.4);
-}
-
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow:
-    0 14px 30px rgba(56, 189, 248, 0.45),
-    0 0 26px rgba(34, 211, 238, 0.55);
 }
 
 .btn-ghost {
@@ -148,23 +145,10 @@ input:focus {
   border: 1px solid rgba(148, 163, 184, 0.5);
 }
 
-.btn-ghost:hover {
-  background: rgba(15, 23, 42, 1);
-  border-color: var(--accent);
-}
-
 .section {
   margin-top: 18px;
   padding-top: 14px;
   border-top: 1px dashed rgba(148, 163, 184, 0.4);
-}
-
-.section-title {
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  margin-bottom: 6px;
 }
 
 .time-pill {
@@ -199,16 +183,12 @@ input:focus {
       <span>Accès NFC</span>
     </div>
     <div class="subtitle">
-      Entre ta clé d’accès ou utilise la clé admin pour gérer.
+      Entre ta clé d’accès ou utilise la clé admin.
     </div>
 
-    <div>
-      <label for="keyInput">Clé d’accès</label>
-      <input id="keyInput" placeholder="nfcreader_XXXX">
-      <button class="btn btn-primary" onclick="validerCle()">
-        Continuer
-      </button>
-    </div>
+    <label>Clé d’accès</label>
+    <input id="keyInput" placeholder="nfcreader_XXXX">
+    <button class="btn btn-primary" onclick="validerCle()">Continuer</button>
 
     <div class="section">
       <div class="section-title">Abonnement</div>
@@ -231,29 +211,18 @@ function afficherTemps() {
   const exp = localStorage.getItem("nfc_exp");
   const el = document.getElementById("timeLeft");
 
-  if (!exp) {
-    el.textContent = "Aucune clé";
-    return;
-  }
-
-  if (exp === "life") {
-    el.textContent = "Abonnement à vie";
-    return;
-  }
+  if (!exp) return el.textContent = "Aucune clé";
+  if (exp === "life") return el.textContent = "À vie";
 
   const reste = Number(exp) - Date.now();
-  if (reste <= 0) {
-    el.textContent = "Clé expirée";
-    return;
-  }
+  if (reste <= 0) return el.textContent = "Expirée";
 
-  const jours = Math.floor(reste / (1000*60*60*24));
-  const heures = Math.floor((reste / (1000*60*60)) % 24);
-  const minutes = Math.floor((reste / (1000*60)) % 60);
+  const j = Math.floor(reste / 86400000);
+  const h = Math.floor((reste / 3600000) % 24);
+  const m = Math.floor((reste / 60000) % 60);
 
-  el.textContent = `${jours}j ${heures}h ${minutes}m restants`;
+  el.textContent = `${j}j ${h}h ${m}m`;
 }
-
 afficherTemps();
 
 function validerCle() {
@@ -262,30 +231,17 @@ function validerCle() {
   const exp = localStorage.getItem("nfc_exp");
   const status = document.getElementById("status");
 
-  // Admin direct
   if (input === ADMIN_KEY) {
     localStorage.setItem("is_admin", "true");
-    window.location.href = "nfc.html";
-    return;
+    localStorage.removeItem("ban_until");
+    return window.location.href = "nfc.html";
   }
 
-  if (!key) {
-    status.textContent = "❌ Aucune clé enregistrée sur cet appareil.";
-    return;
-  }
-
-  if (input !== key) {
-    status.textContent = "❌ Clé incorrecte.";
-    return;
-  }
-
-  if (exp !== "life" && Date.now() > Number(exp)) {
-    status.textContent = "❌ Clé expirée.";
-    return;
-  }
+  if (!key) return status.textContent = "❌ Aucune clé enregistrée.";
+  if (input !== key) return status.textContent = "❌ Clé incorrecte.";
+  if (exp !== "life" && Date.now() > Number(exp)) return status.textContent = "❌ Clé expirée.";
 
   localStorage.setItem("is_admin", "false");
-  status.textContent = "";
   window.location.href = "nfc.html";
 }
 </script>
