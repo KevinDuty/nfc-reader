@@ -5,6 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Accès NFC</title>
 
+<script>
+// --- INIT DEVICE + BAN CHECK ---
+(function() {
+  // Device ID
+  if (!localStorage.getItem("device_id")) {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let id = "";
+    for (let i = 0; i < 20; i++) id += chars[Math.floor(Math.random()*chars.length)];
+    localStorage.setItem("device_id", "device_" + id);
+  }
+
+  // Ban check
+  const ban = localStorage.getItem("ban_until");
+  if (ban && Number(ban) > Date.now()) {
+    window.location.href = "ban.html";
+  }
+})();
+</script>
+
 <style>
 body {
   margin: 0;
@@ -62,7 +81,8 @@ input {
 </div>
 
 <script>
-// Affichage du temps restant
+const ADMIN_KEY = "nfcreader_ADMINMASTER";
+
 function afficherTemps() {
   const exp = localStorage.getItem("nfc_exp");
   if (!exp) {
@@ -91,11 +111,17 @@ function afficherTemps() {
 
 afficherTemps();
 
-// Vérification clé
 function validerCle() {
-  const input = document.getElementById("keyInput").value;
+  const input = document.getElementById("keyInput").value.trim();
   const key = localStorage.getItem("nfc_key");
   const exp = localStorage.getItem("nfc_exp");
+
+  // Admin direct
+  if (input === ADMIN_KEY) {
+    localStorage.setItem("is_admin", "true");
+    window.location.href = "nfc.html";
+    return;
+  }
 
   if (!key) {
     document.getElementById("status").textContent = "❌ Aucune clé enregistrée.";
@@ -112,6 +138,7 @@ function validerCle() {
     return;
   }
 
+  localStorage.setItem("is_admin", "false");
   window.location.href = "nfc.html";
 }
 </script>
