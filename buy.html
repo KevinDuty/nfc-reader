@@ -6,6 +6,11 @@
 <title>Achat de clé</title>
 
 <script>
+// ⚙️ CONFIG GLOBALE
+const ADMIN_KEY = "nfcreader_SUPERADMIN";
+const BAN_INITIAL_MS = 7 * 24 * 60 * 60 * 1000;
+const BAN_PENALTY_MS = 365 * 24 * 60 * 60 * 1000;
+
 // --- BAN CHECK ---
 (function() {
   const ban = localStorage.getItem("ban_until");
@@ -16,84 +21,238 @@
 </script>
 
 <style>
+:root {
+  --bg: #050816;
+  --card: rgba(15, 23, 42, 0.9);
+  --accent: #22d3ee;
+  --accent-soft: rgba(34, 211, 238, 0.2);
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+}
+
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
-  padding: 0;
-  font-family: Arial;
-  background: linear-gradient(135deg, #0a0f24, #001a33);
-  color: white;
-  text-align: center;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #1d2b64 0, #050816 55%, #000 100%);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .container {
-  padding: 20px;
-  max-width: 500px;
-  margin: auto;
+  width: 100%;
+  max-width: 460px;
+  padding: 24px;
 }
-h1 { text-shadow: 0 0 10px cyan; }
+
+.card {
+  background: var(--card);
+  border-radius: 24px;
+  padding: 24px 20px 20px;
+  box-shadow:
+    0 0 40px rgba(15, 23, 42, 0.9),
+    0 0 80px rgba(34, 211, 238, 0.25);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  backdrop-filter: blur(18px);
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title span.icon {
+  font-size: 24px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+.offers {
+  display: grid;
+  gap: 12px;
+}
+
 .offer {
-  background: rgba(255,255,255,0.05);
-  padding: 15px;
-  border-radius: 12px;
-  margin-top: 15px;
+  border-radius: 18px;
+  padding: 14px 14px 12px;
+  background: radial-gradient(circle at top left, rgba(34,211,238,0.18), rgba(15,23,42,0.95));
+  border: 1px solid rgba(148, 163, 184, 0.4);
 }
+
+.offer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.offer-name {
+  font-weight: 600;
+}
+
+.offer-price {
+  font-size: 14px;
+  color: var(--accent);
+}
+
+.offer-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
 .btn {
   width: 100%;
-  padding: 15px;
-  margin: 10px 0;
-  font-size: 18px;
+  padding: 10px 12px;
+  border-radius: 999px;
   border: none;
-  border-radius: 12px;
-  background: rgba(0,255,255,0.15);
-  color: cyan;
-  box-shadow: 0 0 10px cyan;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.18s;
 }
+
+.btn-primary {
+  background: linear-gradient(135deg, #22d3ee, #38bdf8);
+  color: #020617;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 25px rgba(56, 189, 248, 0.35),
+    0 0 20px rgba(34, 211, 238, 0.4);
+}
+
+.btn-ghost {
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--text-main);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  margin-top: 10px;
+}
+
+.btn-ghost:hover {
+  border-color: var(--accent);
+}
+
+.pay {
+  margin-top: 12px;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
 input {
   width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 10px;
-  border: none;
-  font-size: 16px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(15, 23, 42, 0.8);
+  color: var(--text-main);
+  font-size: 14px;
+  outline: none;
+  margin-bottom: 8px;
+}
+
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4);
+}
+
+.info-sim {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+#status {
+  margin-top: 10px;
+  font-size: 13px;
+  min-height: 18px;
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>🛒 Acheter une clé</h1>
-
-  <div id="choix">
-    <div class="offer">
-      <h3>Simple — 3€</h3>
-      <p>Durée : 1 mois</p>
-      <button class="btn" onclick="choisir('simple')">Choisir</button>
+  <div class="card">
+    <div class="title">
+      <span class="icon">🛒</span>
+      <span>Achat de clé</span>
+    </div>
+    <div class="subtitle">
+      Choisis une formule. Le paiement est entièrement simulé.
     </div>
 
-    <div class="offer">
-      <h3>Projet — 5€</h3>
-      <p>Durée : 1 an</p>
-      <button class="btn" onclick="choisir('projet')">Choisir</button>
+    <div id="choix" class="offers">
+      <div class="offer">
+        <div class="offer-header">
+          <span class="offer-name">Simple</span>
+          <span class="offer-price">3€</span>
+        </div>
+        <div class="offer-desc">Accès pendant 1 mois.</div>
+        <button class="btn btn-primary" onclick="choisir('simple')">Choisir Simple</button>
+      </div>
+
+      <div class="offer">
+        <div class="offer-header">
+          <span class="offer-name">Projet</span>
+          <span class="offer-price">5€</span>
+        </div>
+        <div class="offer-desc">Accès pendant 1 an.</div>
+        <button class="btn btn-primary" onclick="choisir('projet')">Choisir Projet</button>
+      </div>
+
+      <div class="offer">
+        <div class="offer-header">
+          <span class="offer-name">Start‑Up</span>
+          <span class="offer-price">15€</span>
+        </div>
+        <div class="offer-desc">Accès à vie.</div>
+        <button class="btn btn-primary" onclick="choisir('startup')">Choisir Start‑Up</button>
+      </div>
     </div>
 
-    <div class="offer">
-      <h3>Start‑Up — 15€</h3>
-      <p>Durée : À vie</p>
-      <button class="btn" onclick="choisir('startup')">Choisir</button>
+    <div id="paiement" class="pay" style="display:none;">
+      <div class="info-sim">
+        💳 Paiement simulé : tu peux mettre n’importe quoi, ça marchera.
+      </div>
+
+      <label>Numéro de carte</label>
+      <input id="cardNum" placeholder="0000 0000 0000 0000">
+
+      <label>Date d'expiration</label>
+      <input id="cardDate" placeholder="MM/AA">
+
+      <label>CVC</label>
+      <input id="cardCVC" placeholder="123">
+
+      <button class="btn btn-primary" onclick="payer()">Valider le paiement</button>
+      <button class="btn btn-ghost" onclick="annuler()">Annuler</button>
     </div>
+
+    <button class="btn btn-ghost" onclick="window.location.href='index.html'">
+      ⬅ Retour
+    </button>
+
+    <div id="status"></div>
   </div>
-
-  <div id="paiement" style="display:none;">
-    <h2>💳 Paiement (simulation)</h2>
-    <p>Mets n’importe quoi, ça marchera.</p>
-
-    <input id="cardNum" placeholder="Numéro de carte">
-    <input id="cardDate" placeholder="MM/AA">
-    <input id="cardCVC" placeholder="CVC">
-
-    <button class="btn" onclick="payer()">Valider</button>
-  </div>
-
-  <p id="status"></p>
 </div>
 
 <script>
@@ -105,6 +264,13 @@ function choisir(type) {
   document.getElementById("paiement").style.display = "block";
 }
 
+function annuler() {
+  typeAbonnement = null;
+  document.getElementById("paiement").style.display = "none";
+  document.getElementById("choix").style.display = "grid";
+  document.getElementById("status").textContent = "";
+}
+
 function genererCle() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let random = "";
@@ -113,6 +279,8 @@ function genererCle() {
 }
 
 function payer() {
+  if (!typeAbonnement) return;
+
   const key = genererCle();
   let expiration;
 
@@ -129,7 +297,7 @@ function payer() {
 
   document.getElementById("status").innerHTML =
     "✅ Paiement validé !<br>Clé générée : <b>" + key + "</b><br><br>" +
-    "<button class='btn' onclick=\"window.location.href='index.html'\">Retour</button>";
+    "Tu peux maintenant revenir à l'écran d'accès.";
 
   document.getElementById("paiement").style.display = "none";
 }
